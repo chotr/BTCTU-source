@@ -17,7 +17,9 @@ export function CandidateScoreCard({
   canCalc: boolean;
   canOverride: boolean;
 }) {
-  const [general, setGeneral] = useState(String(ev.generalScore));
+  const [general, setGeneral] = useState(
+    ev.generalScore === null ? "" : String(ev.generalScore),
+  );
   const [leadership, setLeadership] = useState(
     String(ev.axes.find((a) => a.code === "D")?.value ?? ""),
   );

@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, isNull, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gt, isNull, lte, or } from "drizzle-orm";
 import { ROLES, type Role } from "@btctu/shared";
 import {
   departments,
@@ -50,13 +50,26 @@ export type OrganizationAssignment = {
   validFrom: string | null;
   validTo: string | null;
   sourceRef: string | null;
+  sourceClass: string | null;
 };
+
+export function isAssignmentActive(
+  assignment: Pick<OrganizationAssignment, "validFrom" | "validTo">,
+  date: string,
+): boolean {
+  return (
+    (!assignment.validFrom || assignment.validFrom <= date) &&
+    (!assignment.validTo || assignment.validTo > date)
+  );
+}
 
 export interface OrganizationStore {
   listDepartments(): Promise<Department[]>;
   findDepartmentById(id: string): Promise<Department | null>;
   listCurrentAssignments(): Promise<OrganizationAssignment[]>;
-  listAssignmentsByDepartment(departmentId: string): Promise<OrganizationAssignment[]>;
+  listAssignmentsByDepartment(
+    departmentId: string,
+  ): Promise<OrganizationAssignment[]>;
   findPersonById(id: string): Promise<Person | null>;
   listAssignmentsByPerson(personId: string): Promise<OrganizationAssignment[]>;
   createDepartment(data: {
@@ -78,15 +91,14 @@ export interface OrganizationStore {
     data: { name?: string; externalId?: string; sourceRef?: string },
   ): Promise<Person | null>;
   findPositionById(id: string): Promise<Position | null>;
-  createAssignment(data: {
+  replaceAssignment(data: {
     personId: string;
     positionId: string;
     departmentId: string;
     assignmentType: "STAFF" | "SECONDMENT";
-    validFrom?: string;
+    validFrom: string;
     sourceRef?: string;
   }): Promise<PositionAssignment>;
-  endActiveAssignments(personId: string, validTo: string): Promise<void>;
 }
 
 export class DatabaseOrganizationStore implements OrganizationStore {
@@ -129,15 +141,25 @@ export class DatabaseOrganizationStore implements OrganizationStore {
         validFrom: positionAssignments.validFrom,
         validTo: positionAssignments.validTo,
         sourceRef: positionAssignments.sourceRef,
+        sourceClass: positionAssignments.sourceClass,
       })
       .from(positionAssignments)
       .innerJoin(people, eq(positionAssignments.personId, people.id))
       .innerJoin(positions, eq(positionAssignments.positionId, positions.id))
-      .innerJoin(departments, eq(positionAssignments.departmentId, departments.id))
+      .innerJoin(
+        departments,
+        eq(positionAssignments.departmentId, departments.id),
+      )
       .where(
-        or(
-          isNull(positionAssignments.validTo),
-          sql`${positionAssignments.validTo} >= ${today}`,
+        and(
+          or(
+            isNull(positionAssignments.validFrom),
+            lte(positionAssignments.validFrom, today),
+          ),
+          or(
+            isNull(positionAssignments.validTo),
+            gt(positionAssignments.validTo, today),
+          ),
         ),
       )
       .orderBy(asc(people.name));
@@ -170,17 +192,27 @@ export class DatabaseOrganizationStore implements OrganizationStore {
         validFrom: positionAssignments.validFrom,
         validTo: positionAssignments.validTo,
         sourceRef: positionAssignments.sourceRef,
+        sourceClass: positionAssignments.sourceClass,
       })
       .from(positionAssignments)
       .innerJoin(people, eq(positionAssignments.personId, people.id))
       .innerJoin(positions, eq(positionAssignments.positionId, positions.id))
-      .innerJoin(departments, eq(positionAssignments.departmentId, departments.id))
+      .innerJoin(
+        departments,
+        eq(positionAssignments.departmentId, departments.id),
+      )
       .where(
         and(
           eq(positionAssignments.departmentId, dept.id),
-          or(
-            isNull(positionAssignments.validTo),
-            sql`${positionAssignments.validTo} >= ${today}`,
+          and(
+            or(
+              isNull(positionAssignments.validFrom),
+              lte(positionAssignments.validFrom, today),
+            ),
+            or(
+              isNull(positionAssignments.validTo),
+              gt(positionAssignments.validTo, today),
+            ),
           ),
         ),
       )
@@ -226,11 +258,15 @@ export class DatabaseOrganizationStore implements OrganizationStore {
         validFrom: positionAssignments.validFrom,
         validTo: positionAssignments.validTo,
         sourceRef: positionAssignments.sourceRef,
+        sourceClass: positionAssignments.sourceClass,
       })
       .from(positionAssignments)
       .innerJoin(people, eq(positionAssignments.personId, people.id))
       .innerJoin(positions, eq(positionAssignments.positionId, positions.id))
-      .innerJoin(departments, eq(positionAssignments.departmentId, departments.id))
+      .innerJoin(
+        departments,
+        eq(positionAssignments.departmentId, departments.id),
+      )
       .where(eq(positionAssignments.personId, p.id))
       .orderBy(desc(positionAssignments.createdAt));
 
@@ -299,30 +335,40 @@ export class DatabaseOrganizationStore implements OrganizationStore {
     return rows[0] ?? null;
   }
 
-  async createAssignment(data: {
+  async replaceAssignment(data: {
     personId: string;
     positionId: string;
     departmentId: string;
     assignmentType: "STAFF" | "SECONDMENT";
-    validFrom?: string;
+    validFrom: string;
     sourceRef?: string;
   }): Promise<PositionAssignment> {
-    const [assignment] = await this.db
-      .insert(positionAssignments)
-      .values(data)
-      .returning();
-    return assignment;
-  }
+    return this.db.transaction(async (tx) => {
+      await tx
+        .update(positionAssignments)
+        .set({ validTo: data.validFrom })
+        .where(
+          and(
+            eq(positionAssignments.personId, data.personId),
+            or(
+              isNull(positionAssignments.validFrom),
+              lte(positionAssignments.validFrom, data.validFrom),
+            ),
+            or(
+              isNull(positionAssignments.validTo),
+              gt(positionAssignments.validTo, data.validFrom),
+            ),
+          ),
+        );
 
-  async endActiveAssignments(personId: string, validTo: string): Promise<void> {
-    await this.db
-      .update(positionAssignments)
-      .set({ validTo })
-      .where(
-        and(
-          eq(positionAssignments.personId, personId),
-          isNull(positionAssignments.validTo),
-        ),
-      );
+      const [assignment] = await tx
+        .insert(positionAssignments)
+        .values({
+          ...data,
+          sourceClass: "UNVERIFIED",
+        })
+        .returning();
+      return assignment;
+    });
   }
 }

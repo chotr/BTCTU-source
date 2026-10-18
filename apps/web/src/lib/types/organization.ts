@@ -19,6 +19,8 @@ export interface Department {
   functionText: string;
   headId: string;
   responsibilityIds: string[];
+  sourceRef?: string | null;
+  sourceClass?: string;
 }
 
 export interface PositionRef {
@@ -34,6 +36,8 @@ export interface Person {
   role?: Role;
   departmentId: string;
   positionRefId: string;
+  sourceRef?: string | null;
+  sourceClass?: string;
 }
 
 export interface ResponsibilityRef {

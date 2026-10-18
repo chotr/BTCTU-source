@@ -1,4 +1,4 @@
-import { ROLES } from "@btctu/shared";
+import { ROLES, type TaskResultQualityLevel } from "@btctu/shared";
 import type { AppState } from "../store";
 import type {
   AuditEvent,
@@ -23,9 +23,17 @@ import type {
 } from "./contracts";
 
 export function qualityToApi(value: string): ApiTaskResult["qualityLevel"] {
-  if (value === "Đáp ứng tốt") return "A";
-  if (value === "Đáp ứng") return "B";
-  return "C";
+  const mapped: Record<string, TaskResultQualityLevel> = {
+    "Đáp ứng tốt": "A",
+    "Đáp ứng": "B",
+    "Cần hoàn thiện": "C",
+    "Không đáp ứng": "D",
+  };
+  const quality = mapped[value];
+  if (!quality) {
+    throw new Error("Mức chất lượng không được hỗ trợ.");
+  }
+  return quality;
 }
 
 function qualityFromApi(value: ApiTaskResult["qualityLevel"]): string {
@@ -33,6 +41,7 @@ function qualityFromApi(value: ApiTaskResult["qualityLevel"]): string {
     A: "Đáp ứng tốt",
     B: "Đáp ứng",
     C: "Cần hoàn thiện",
+    D: "Không đáp ứng",
   }[value];
 }
 
@@ -87,6 +96,8 @@ export function mapApiPerson(item: ApiPerson): Person {
     role: item.role,
     departmentId: item.departmentId,
     positionRefId: item.positionRefId,
+    sourceRef: item.sourceRef,
+    sourceClass: item.sourceClass,
   };
 }
 
@@ -170,7 +181,7 @@ export function mapApiTask(task: ApiTask, state: TaskContext): Task {
       assigneeName: person?.name ?? task.assigneeId,
       positionTitle: person?.title ?? "",
       departmentName: department?.name ?? task.departmentId,
-      assignedAt: "",
+      assignedAt: null,
     },
     dueAt: task.dueAt,
     status: task.status,
@@ -178,6 +189,8 @@ export function mapApiTask(task: ApiTask, state: TaskContext): Task {
     result,
     evidence: [],
     history: [],
+    evidenceLoaded: false,
+    historyLoaded: false,
   };
 }
 
@@ -199,14 +212,14 @@ export function mapApiEvaluation(
       departmentId: evaluation.departmentId,
       status: evaluation.status,
       isLeader,
-      generalScore: evaluation.score,
-      generalMax: 100,
+      generalScore: null,
+      generalMax: 30,
       axes: [],
       calc: {
         ruleVersion: "api",
-        formulaText: "Điểm do API cung cấp",
-        kpiText: "Điểm do API cung cấp",
-        averageAxes: evaluation.score,
+        formulaText: "API chưa cung cấp thành phần điểm",
+        kpiText: "Tổng điểm do API cung cấp",
+        averageAxes: null,
         textTotal: evaluation.score,
         arithmeticTotal: evaluation.score,
         note: null,
@@ -225,7 +238,7 @@ export function mapApiEvaluation(
     departmentId: evaluation.departmentId,
     status: evaluation.status,
     isLeader: base.isLeader,
-    generalScore: evaluation.score,
+    generalScore: base.generalScore,
     calc: {
       ...base.calc,
       textTotal: evaluation.score,

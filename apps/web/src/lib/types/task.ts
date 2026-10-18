@@ -76,7 +76,7 @@ export interface Task {
     assigneeName: string;
     positionTitle: string;
     departmentName: string;
-    assignedAt: string;
+    assignedAt: string | null;
   };
   revision?: number;
   dueAt: string;
@@ -85,4 +85,6 @@ export interface Task {
   result: TaskResult | null;
   evidence: EvidenceRef[];
   history: HistoryEntry[];
+  evidenceLoaded?: boolean;
+  historyLoaded?: boolean;
 }

@@ -4,12 +4,12 @@ import { Button, Card, EmptyState } from "@/components/ui";
 import type { AppState } from "@/lib/store";
 import { ORG_TAB_LABELS, type OrgTab } from "./model";
 
-/** Tab nhân sự / chức vụ / trách nhiệm: bảng tham chiếu gọn. */
 export function MasterTable({
   tab,
   items,
   state,
   allowed,
+  canRemove,
   onEdit,
   onHistory,
 }: {
@@ -17,6 +17,7 @@ export function MasterTable({
   items: readonly unknown[];
   state: AppState;
   allowed: boolean;
+  canRemove: boolean;
   onEdit: (item: unknown, del?: boolean) => void;
   onHistory: (id: string) => void;
 }) {
@@ -75,12 +76,14 @@ export function MasterTable({
                       {allowed && (
                         <>
                           <Button onClick={() => onEdit(item)}>Sửa</Button>
-                          <Button
-                            variant="ghost"
-                            onClick={() => onEdit(item, true)}
-                          >
-                            Xóa
-                          </Button>
+                          {canRemove && (
+                            <Button
+                              variant="ghost"
+                              onClick={() => onEdit(item, true)}
+                            >
+                              Xóa
+                            </Button>
+                          )}
                         </>
                       )}
                     </div>

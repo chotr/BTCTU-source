@@ -4,6 +4,7 @@ import { can, canReadTask } from "@/middleware/authorization";
 import { validate } from "@/middleware/validation";
 import { denyWithAudit, recordAudit } from "@/modules/audit/audit.recorder";
 import { PUBLISHED_CATALOG_VERSION } from "@/modules/catalog/catalog.routes";
+import type { DirectoryPort } from "@/modules/identity/directory";
 import { query } from "@/shared/request";
 import { problem } from "@/shared/problem";
 import type { Task } from "@/types";
@@ -31,7 +32,9 @@ function isPeriodLocked(req: Request, periodId: string): boolean {
   return Boolean(period?.lockedAt);
 }
 
-export function createTaskRouter(): Router {
+export function createTaskRouter(options: {
+  directory: DirectoryPort;
+}): Router {
   const router = Router();
 
   router.get("/tasks", (req, res) => {
@@ -49,17 +52,15 @@ export function createTaskRouter(): Router {
     res.json({ data, meta: { total: data.length } });
   });
 
-  router.post("/tasks", validate(createTaskSchema), (req, res) => {
+  router.post("/tasks", validate(createTaskSchema), async (req, res) => {
     const state = req.state!;
     const actor = req.actor!;
     const input = req.validated as z.infer<typeof createTaskSchema>;
-    const assignee = state.people.find(
-      (person) => person.id === input.assigneeId,
-    );
+    const assignee = await options.directory.findById(input.assigneeId);
     const catalog = state.catalog.find(
       (item) => item.id === input.catalogItemId,
     );
-    if (!assignee || !catalog) {
+    if (!assignee || !assignee.departmentId || !catalog) {
       problem(
         req,
         res,

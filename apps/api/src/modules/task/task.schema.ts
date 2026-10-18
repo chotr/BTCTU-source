@@ -1,3 +1,4 @@
+import { TASK_RESULT_QUALITY_LEVELS } from "@btctu/shared";
 import { z } from "zod";
 
 const dueDateSchema = z
@@ -6,7 +7,9 @@ const dueDateSchema = z
   .regex(/^\d{4}-\d{2}-\d{2}$/)
   .refine((value) => {
     const date = new Date(`${value}T00:00:00.000Z`);
-    return !Number.isNaN(date.valueOf()) && date.toISOString().slice(0, 10) === value;
+    return (
+      !Number.isNaN(date.valueOf()) && date.toISOString().slice(0, 10) === value
+    );
   }, "Invalid due date.");
 
 export const createTaskSchema = z.object({
@@ -22,7 +25,7 @@ export const createTaskSchema = z.object({
 export const resultSchema = z.object({
   quantity: z.number().nonnegative(),
   product: z.string().trim().min(1).max(240),
-  qualityLevel: z.enum(["A", "B", "C"]),
+  qualityLevel: z.enum(TASK_RESULT_QUALITY_LEVELS),
   note: z.string().trim().max(2000).default(""),
   submit: z.boolean().default(false),
 });

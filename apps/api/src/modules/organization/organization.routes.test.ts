@@ -13,6 +13,7 @@ import type {
   OrganizationAssignment,
   OrganizationStore,
 } from "./organization.repository";
+import { isAssignmentActive } from "./organization.repository";
 
 const testEnv: Env = {
   environment: "production",
@@ -42,6 +43,8 @@ class MemoryOrganizationStore implements OrganizationStore {
       name: "Phòng Tổ chức cán bộ",
       shortName: "Tổ chức cán bộ",
       officialCode: "TCCB",
+      sourceRef: "01-QĐ/BTCTU, Điều 2–6",
+      sourceClass: "FACT",
       createdAt: new Date(),
     },
     {
@@ -49,6 +52,8 @@ class MemoryOrganizationStore implements OrganizationStore {
       name: "Lãnh đạo Ban",
       shortName: "Lãnh đạo Ban",
       officialCode: "LĐB",
+      sourceRef: "01-QĐ/BTCTU, Điều 2–6",
+      sourceClass: "FACT",
       createdAt: new Date(),
     },
   ];
@@ -59,6 +64,7 @@ class MemoryOrganizationStore implements OrganizationStore {
       name: "Nguyễn Thượng Hải",
       externalId: "p-nguyen-thuong-hai",
       sourceRef: "01-QĐ/BTCTU, Điều 2–6",
+      sourceClass: "FACT",
       createdAt: new Date(),
     },
     {
@@ -66,6 +72,7 @@ class MemoryOrganizationStore implements OrganizationStore {
       name: "Trần Hải Triều",
       externalId: "p-tran-hai-trieu",
       sourceRef: "01-QĐ/BTCTU, Điều 4",
+      sourceClass: "FACT",
       createdAt: new Date(),
     },
   ];
@@ -94,6 +101,7 @@ class MemoryOrganizationStore implements OrganizationStore {
     validFrom: string | null;
     validTo: string | null;
     sourceRef: string | null;
+    sourceClass: string | null;
     createdAt: Date;
   }> = [
     {
@@ -105,6 +113,7 @@ class MemoryOrganizationStore implements OrganizationStore {
       validFrom: "2025-01-01",
       validTo: null,
       sourceRef: "01-QĐ/BTCTU, Điều 2–6",
+      sourceClass: "FACT",
       createdAt: new Date(),
     },
     {
@@ -116,6 +125,7 @@ class MemoryOrganizationStore implements OrganizationStore {
       validFrom: "2025-01-01",
       validTo: null,
       sourceRef: "01-QĐ/BTCTU, Điều 4",
+      sourceClass: "FACT",
       createdAt: new Date(),
     },
   ];
@@ -133,8 +143,9 @@ class MemoryOrganizationStore implements OrganizationStore {
   }
 
   async listCurrentAssignments(): Promise<OrganizationAssignment[]> {
+    const today = new Date().toISOString().slice(0, 10);
     return this.assignments
-      .filter((a) => !a.validTo || a.validTo >= "2026-01-01")
+      .filter((assignment) => isAssignmentActive(assignment, today))
       .map((a) => {
         const person = this.people.find((p) => p.id === a.personId)!;
         const position = this.positions.find((pos) => pos.id === a.positionId)!;
@@ -158,6 +169,7 @@ class MemoryOrganizationStore implements OrganizationStore {
           validFrom: a.validFrom,
           validTo: a.validTo,
           sourceRef: a.sourceRef,
+          sourceClass: a.sourceClass,
         };
       });
   }
@@ -172,9 +184,7 @@ class MemoryOrganizationStore implements OrganizationStore {
   }
 
   async findPersonById(id: string): Promise<Person | null> {
-    return (
-      this.people.find((p) => p.id === id || p.externalId === id) ?? null
-    );
+    return this.people.find((p) => p.id === id || p.externalId === id) ?? null;
   }
 
   async listAssignmentsByPerson(
@@ -206,6 +216,7 @@ class MemoryOrganizationStore implements OrganizationStore {
           validFrom: a.validFrom,
           validTo: a.validTo,
           sourceRef: a.sourceRef,
+          sourceClass: a.sourceClass,
         };
       });
   }
@@ -220,6 +231,8 @@ class MemoryOrganizationStore implements OrganizationStore {
       name: data.name,
       shortName: data.shortName ?? null,
       officialCode: data.officialCode ?? null,
+      sourceRef: null,
+      sourceClass: "UNVERIFIED",
       createdAt: new Date(),
     };
     this.departments.push(created);
@@ -251,6 +264,7 @@ class MemoryOrganizationStore implements OrganizationStore {
       name: data.name,
       externalId: data.externalId ?? null,
       sourceRef: data.sourceRef ?? null,
+      sourceClass: "UNVERIFIED",
       createdAt: new Date(),
     };
     this.people.push(created);
@@ -273,39 +287,41 @@ class MemoryOrganizationStore implements OrganizationStore {
   }
 
   async findPositionById(id: string): Promise<Position | null> {
-    return this.positions.find((pos) => pos.id === id || pos.title === id) ?? null;
+    return (
+      this.positions.find((pos) => pos.id === id || pos.title === id) ?? null
+    );
   }
 
-  async createAssignment(data: {
+  async replaceAssignment(data: {
     personId: string;
     positionId: string;
     departmentId: string;
     assignmentType: "STAFF" | "SECONDMENT";
-    validFrom?: string;
+    validFrom: string;
     sourceRef?: string;
   }): Promise<PositionAssignment> {
+    for (const assignment of this.assignments) {
+      if (
+        assignment.personId === data.personId &&
+        isAssignmentActive(assignment, data.validFrom)
+      ) {
+        assignment.validTo = data.validFrom;
+      }
+    }
     const created: PositionAssignment = {
       id: `assign-${this.assignments.length + 1}`,
       personId: data.personId,
       positionId: data.positionId,
       departmentId: data.departmentId,
       assignmentType: data.assignmentType,
-      validFrom: data.validFrom ?? null,
+      validFrom: data.validFrom,
       validTo: null,
       sourceRef: data.sourceRef ?? null,
-      sourceClass: "FACT",
+      sourceClass: "UNVERIFIED",
       createdAt: new Date(),
     };
     this.assignments.push(created);
     return created;
-  }
-
-  async endActiveAssignments(personId: string, validTo: string): Promise<void> {
-    for (const a of this.assignments) {
-      if (a.personId === personId && !a.validTo) {
-        a.validTo = validTo;
-      }
-    }
   }
 }
 
@@ -328,13 +344,14 @@ function authMock(role: "lanh_dao" | "truong_phong" | "cong_chuc"): AuthPort {
       status: "ACTIVE",
       accountRole: role === "lanh_dao" ? "ROOT" : "USER",
       mustChangePassword: false,
-      directoryActorId: role === "lanh_dao" ? "p-nguyen-thuong-hai" : "p-tran-hai-trieu",
+      directoryActorId:
+        role === "lanh_dao" ? "p-nguyen-thuong-hai" : "p-tran-hai-trieu",
     }),
     changePassword: async () => undefined,
   };
 }
 
-describe("Organization routes (E2E)", () => {
+describe("organization HTTP routes", () => {
   it("GET /api/v1/organizations returns departments, people with assignments and traceability", async () => {
     const store = new MemoryOrganizationStore();
     const app = createApp(testEnv, {
@@ -359,6 +376,7 @@ describe("Organization routes (E2E)", () => {
       name: "Phòng Tổ chức cán bộ",
       code: "TCCB",
       sourceRef: "01-QĐ/BTCTU, Điều 2–6",
+      sourceClass: "FACT",
     });
     expect(res.body.data.people).toHaveLength(2);
     expect(res.body.data.people[0]).toMatchObject({
@@ -368,10 +386,7 @@ describe("Organization routes (E2E)", () => {
       role: "lanh_dao",
       departmentId: "dept-0",
     });
-    expect(res.body.meta).toMatchObject({
-      sourceRef: "01-QĐ/BTCTU, Điều 2–7",
-      sourceClass: "FACT",
-    });
+    expect(res.body.data.people[0].sourceClass).toBe("FACT");
   });
 
   it("GET /api/v1/organizations/:departmentId returns department detail and its members", async () => {

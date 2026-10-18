@@ -6,8 +6,8 @@ import {
 } from "express";
 import { createAccessTokenGuard } from "@/middleware/authentication";
 import type { AuthPort, AuthenticatedUser } from "@/modules/auth/auth.types";
+import type { DirectoryPort } from "@/modules/identity/directory";
 import { formatIssues, problem } from "@/shared/problem";
-import type { WorkspaceState } from "@/types";
 import {
   AccountConflictError,
   AccountNotFoundError,
@@ -23,7 +23,7 @@ import {
 export type AccountAdminRouterOptions = {
   auth: AuthPort;
   accounts: AccountAdminPort;
-  state: WorkspaceState;
+  directory: DirectoryPort;
 };
 
 function accountResponse(account: AuthenticatedUser) {
@@ -169,15 +169,10 @@ export function createAccountAdminRouter(
           .map((account) => account.directoryActorId)
           .filter((id): id is string => id !== null),
       );
-      const data = options.state.people
+      const people = await options.directory.list();
+      const data = people
         .filter((person) => !linkedActorIds.has(person.id))
-        .map((person) => ({
-          id: person.id,
-          name: person.name,
-          title: person.title,
-          role: person.role,
-          departmentId: person.departmentId,
-        }));
+        .map((person) => ({ ...person }));
       res.json({ data, meta: { total: data.length } });
     } catch (error) {
       next(error);
@@ -221,11 +216,7 @@ export function createAccountAdminRouter(
       );
       return;
     }
-    if (
-      !options.state.people.some(
-        (person) => person.id === parsed.data.directoryActorId,
-      )
-    ) {
+    if (!(await options.directory.findById(parsed.data.directoryActorId))) {
       problem(
         req,
         res,
@@ -265,9 +256,7 @@ export function createAccountAdminRouter(
     }
     if (
       parsed.data.directoryActorId &&
-      !options.state.people.some(
-        (person) => person.id === parsed.data.directoryActorId,
-      )
+      !(await options.directory.findById(parsed.data.directoryActorId))
     ) {
       problem(
         req,

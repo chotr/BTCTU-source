@@ -6,8 +6,17 @@ import {
   mapApiPeriod,
   mapApiTask,
 } from "@/lib/api-adapter";
+import { qualityToApi } from "@/lib/api-mode/mappers";
 
 describe("API adapter", () => {
+  it("keeps all four business quality levels distinct", () => {
+    expect(qualityToApi("Đáp ứng tốt")).toBe("A");
+    expect(qualityToApi("Đáp ứng")).toBe("B");
+    expect(qualityToApi("Cần hoàn thiện")).toBe("C");
+    expect(qualityToApi("Không đáp ứng")).toBe("D");
+    expect(() => qualityToApi("Không xác định")).toThrow();
+  });
+
   it("maps catalog and period records to the fields used by the UI", () => {
     expect(
       mapApiCatalogItem(
@@ -156,7 +165,8 @@ describe("API adapter", () => {
       },
     );
 
-    expect(evaluation.generalScore).toBe(86.75);
+    expect(evaluation.generalScore).toBeNull();
+    expect(evaluation.calc.averageAxes).toBeNull();
     expect(evaluation.calc.arithmeticTotal).toBe(86.75);
     expect(evaluation.self?.comment).toBe("Đã hoàn thành nhiệm vụ.");
     expect(evaluation.review?.comment).toBe("Đủ căn cứ đề xuất.");
@@ -214,5 +224,4 @@ describe("API adapter", () => {
       global.fetch = originalFetch;
     }
   });
-
 });

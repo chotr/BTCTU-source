@@ -30,6 +30,12 @@ export const departments = pgTable("departments", {
   // Chờ văn bản có thẩm quyền; không tự gán mã hành chính.
   officialCode: varchar("official_code", { length: 64 }),
 
+  sourceRef: varchar("source_ref", { length: 255 }),
+
+  sourceClass: varchar("source_class", { length: 32 })
+    .notNull()
+    .default("UNVERIFIED"),
+
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
@@ -46,6 +52,10 @@ export const people = pgTable("people", {
   externalId: varchar("external_id", { length: 255 }),
 
   sourceRef: varchar("source_ref", { length: 255 }),
+
+  sourceClass: varchar("source_class", { length: 32 })
+    .notNull()
+    .default("UNVERIFIED"),
 
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
@@ -96,7 +106,9 @@ export const positionAssignments = pgTable(
     sourceRef: varchar("source_ref", { length: 255 }),
 
     // Phân loại nguồn dữ liệu.
-    sourceClass: varchar("source_class", { length: 32 }),
+    sourceClass: varchar("source_class", { length: 32 })
+      .notNull()
+      .default("UNVERIFIED"),
 
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()

@@ -1,21 +1,22 @@
 "use client";
 
-import { DotsThreeVertical, PencilSimple, Trash } from "@phosphor-icons/react";
+import { DotsThreeVertical } from "@phosphor-icons/react";
 import { useState } from "react";
 import { personName } from "@/lib/shared/names";
 import { Badge, Card } from "@/components/ui";
 import type { AppState } from "@/lib/store";
 
-/** Tab "Đơn vị": các thẻ đơn vị kèm số nhân sự và trách nhiệm. */
 export function DepartmentCards({
   items,
   state,
   allowed,
+  canRemove,
   onEdit,
 }: {
   items: AppState["departments"];
   state: AppState;
   allowed: boolean;
+  canRemove: boolean;
   onEdit: (item: unknown, del?: boolean) => void;
 }) {
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
@@ -66,17 +67,19 @@ export function DepartmentCards({
                       >
                         <span>Sửa</span>
                       </button>
-                      <button
-                        type="button"
-                        role="menuitem"
-                        onClick={() => {
-                          setOpenMenuId(null);
-                          onEdit(d, true);
-                        }}
-                        className="flex w-full items-center justify-end gap-2 rounded-ctl px-2.5 py-1.5 text-left text-[13px] text-danger-600 transition-colors hover:bg-danger-50"
-                      >
-                        <span>Xóa</span>
-                      </button>
+                      {canRemove && (
+                        <button
+                          type="button"
+                          role="menuitem"
+                          onClick={() => {
+                            setOpenMenuId(null);
+                            onEdit(d, true);
+                          }}
+                          className="flex w-full items-center justify-end gap-2 rounded-ctl px-2.5 py-1.5 text-left text-[13px] text-danger-600 transition-colors hover:bg-danger-50"
+                        >
+                          <span>Xóa</span>
+                        </button>
+                      )}
                     </div>
                   </>
                 )}

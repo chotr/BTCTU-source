@@ -38,8 +38,11 @@ export default function OrganizationPage() {
   const departments = state.departments.filter((d) =>
     canViewDepartment(user, d.id),
   );
+  const apiMode = isApiWorkspace();
   const allowed =
-    tab === "people" ? canAssign(user) : canManage(user);
+    (!apiMode || tab === "departments" || tab === "people") &&
+    (tab === "people" ? canAssign(user) : canManage(user));
+  const canRemove = !apiMode && allowed;
   const items = state[tab].filter((item) => {
     const r = item as unknown as Record<string, string>;
     const id = tab === "departments" ? r.id : r.departmentId;
@@ -185,6 +188,7 @@ export default function OrganizationPage() {
           items={items as typeof state.departments}
           state={state}
           allowed={allowed}
+          canRemove={canRemove}
           onEdit={edit}
         />
       ) : (
@@ -193,6 +197,7 @@ export default function OrganizationPage() {
           items={items}
           state={state}
           allowed={allowed}
+          canRemove={canRemove}
           onEdit={edit}
           onHistory={setHistory}
         />

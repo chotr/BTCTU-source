@@ -1,4 +1,9 @@
-import type { Classification, EvaluationStatus, Role } from "@btctu/shared";
+import type {
+  Classification,
+  EvaluationStatus,
+  Role,
+  TaskResultQualityLevel,
+} from "@btctu/shared";
 import { TASK_STATUSES } from "@btctu/shared";
 
 export type ApiActor = {
@@ -20,6 +25,8 @@ export type ApiDepartment = {
   code: string;
   name: string;
   shortName: string;
+  sourceRef: string | null;
+  sourceClass: string;
 };
 
 export type ApiPerson = {
@@ -29,6 +36,8 @@ export type ApiPerson = {
   role: Role;
   departmentId: string;
   positionRefId: string;
+  sourceRef: string | null;
+  sourceClass: string;
 };
 
 export type ApiCatalogItem = {
@@ -45,7 +54,7 @@ export type ApiCatalogItem = {
 export type ApiTaskResult = {
   quantity: number;
   product: string;
-  qualityLevel: "A" | "B" | "C";
+  qualityLevel: TaskResultQualityLevel;
   note: string;
   submittedAt: string | null;
 };

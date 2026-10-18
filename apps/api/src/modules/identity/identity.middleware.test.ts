@@ -3,6 +3,8 @@ import request from "supertest";
 import { createApp } from "@/app";
 import type { Env } from "@/env";
 import type { AuthPort } from "@/modules/auth/auth.types";
+import { createStateDirectory } from "@/modules/identity/directory";
+import { createWorkspaceState } from "@/mock-state";
 import { ACCESS_COOKIE_NAME } from "@/security/cookie";
 
 const productionEnv: Env = {
@@ -55,6 +57,7 @@ describe("production actor identity", () => {
   it("resolves an authenticated account through its directory actor id", async () => {
     const app = createApp(productionEnv, {
       auth: authWithDirectoryActor("p-nguyen-tran-thi"),
+      directory: createStateDirectory(createWorkspaceState().people),
     });
 
     const response = await request(app)
@@ -92,7 +95,10 @@ describe("production actor identity", () => {
       }),
     };
 
-    const app = createApp(productionEnv, { auth: rootAuth });
+    const app = createApp(productionEnv, {
+      auth: rootAuth,
+      directory: createStateDirectory(createWorkspaceState().people),
+    });
     const response = await request(app)
       .get("/api/v1/me")
       .set("Cookie", `${ACCESS_COOKIE_NAME}=valid-access-token`);

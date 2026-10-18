@@ -1,5 +1,5 @@
 import { apiRequest } from "../http-client";
-import { pushToast } from "../store";
+import { getState, pushToast } from "../store";
 import type { Department, Person } from "../types";
 import { errorText, unsupportedMasterData } from "./feedback";
 import { loadApiWorkspace } from "./workspace";
@@ -53,6 +53,9 @@ export const organizationActions = {
   ): Promise<void> {
     try {
       let personId = input.id;
+      const current = input.id
+        ? getState().people.find((person) => person.id === input.id)
+        : undefined;
       if (personId) {
         await apiRequest(`/api/v1/people/${encodeURIComponent(personId)}`, {
           method: "PATCH",
@@ -66,7 +69,11 @@ export const organizationActions = {
         personId = response.data.id;
       }
 
-      if (input.departmentId && input.positionRefId) {
+      const assignmentChanged =
+        !current ||
+        current.departmentId !== input.departmentId ||
+        current.positionRefId !== input.positionRefId;
+      if (assignmentChanged && input.departmentId && input.positionRefId) {
         await apiRequest("/api/v1/assignments", {
           method: "POST",
           body: JSON.stringify({

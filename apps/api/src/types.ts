@@ -3,6 +3,7 @@ import type {
   Classification,
   EvaluationStatus,
   Role,
+  TaskResultQualityLevel,
   TaskStatus,
 } from "@btctu/shared";
 import type { AuditOutcome } from "@/db/schema/audit-events";
@@ -47,7 +48,7 @@ export type CatalogItem = {
 export type TaskResult = {
   quantity: number;
   product: string;
-  qualityLevel: "A" | "B" | "C";
+  qualityLevel: TaskResultQualityLevel;
   note: string;
   submittedAt: string | null;
 };

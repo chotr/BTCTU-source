@@ -29,7 +29,7 @@ export interface CalcSnapshot {
   ruleVersion: string;
   formulaText: string;
   kpiText: string;
-  averageAxes: number;
+  averageAxes: number | null;
   textTotal: number;
   arithmeticTotal: number | null;
   note: string | null;
@@ -77,7 +77,7 @@ export interface Evaluation {
   departmentId: string;
   status: EvaluationStatus;
   isLeader: boolean;
-  generalScore: number;
+  generalScore: number | null;
   generalMax: number;
   axes: AxisSnapshot[];
   calc: CalcSnapshot;

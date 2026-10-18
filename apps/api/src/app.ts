@@ -24,6 +24,10 @@ import {
   createDirectoryActorResolver,
   type ActorResolver,
 } from "@/modules/identity/actor-resolver";
+import {
+  createStateDirectory,
+  type DirectoryPort,
+} from "@/modules/identity/directory";
 import { createActorMiddleware } from "@/modules/identity/identity.middleware";
 import { createIdentityRouter } from "@/modules/identity/identity.routes";
 import { createOrganizationRouter } from "@/modules/organization/organization.routes";
@@ -31,6 +35,7 @@ import {
   DatabaseOrganizationStore,
   type OrganizationStore,
 } from "@/modules/organization/organization.repository";
+import { OrganizationDirectory } from "@/modules/organization/organization.directory";
 import { createReportingRouter } from "@/modules/reporting/reporting.routes";
 import { createTaskRouter } from "@/modules/task/task.routes";
 import { createWorkspaceState } from "@/mock-state";
@@ -39,6 +44,7 @@ import type { WorkspaceState } from "@/types";
 
 export type AppDependencies = AuthModuleOverrides & {
   actorResolver?: ActorResolver;
+  directory?: DirectoryPort;
   accountAdmin?: AccountAdminPort;
   organizationStore?: OrganizationStore;
   state?: WorkspaceState;
@@ -48,13 +54,21 @@ export function createApp(env: Env, dependencies: AppDependencies = {}) {
   const { auth, throttle } = createAuthModule(env, dependencies);
   const state = dependencies.state ?? createWorkspaceState();
   const db = createDatabase(env.databaseUrl);
-  const actorResolver =
-    dependencies.actorResolver ?? createDirectoryActorResolver(state.people);
-  const accountAdmin =
-    dependencies.accountAdmin ??
-    new AccountAdminService(new DatabaseAccountAdminStore(db), new PasswordService());
   const organizationStore =
     dependencies.organizationStore ?? new DatabaseOrganizationStore(db);
+  const directory =
+    dependencies.directory ??
+    (dependencies.state
+      ? createStateDirectory(state.people)
+      : new OrganizationDirectory(organizationStore));
+  const actorResolver =
+    dependencies.actorResolver ?? createDirectoryActorResolver(directory);
+  const accountAdmin =
+    dependencies.accountAdmin ??
+    new AccountAdminService(
+      new DatabaseAccountAdminStore(db),
+      new PasswordService(),
+    );
 
   const app = express();
   app.disable("x-powered-by");
@@ -95,14 +109,14 @@ export function createApp(env: Env, dependencies: AppDependencies = {}) {
 
   api.use(
     "/admin",
-    createAccountAdminRouter({ auth, accounts: accountAdmin, state }),
+    createAccountAdminRouter({ auth, accounts: accountAdmin, directory }),
   );
 
   api.use(createActorMiddleware({ env, auth, actorResolver, state }));
   api.use(createIdentityRouter(env));
   api.use(createOrganizationRouter({ store: organizationStore }));
   api.use(createCatalogRouter());
-  api.use(createTaskRouter());
+  api.use(createTaskRouter({ directory }));
   api.use(createEvaluationRouter());
   api.use(createAuditRouter());
   api.use(createReportingRouter());

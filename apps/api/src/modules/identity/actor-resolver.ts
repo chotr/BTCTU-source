@@ -1,25 +1,12 @@
-import type { Actor, Person } from "@/types";
-
-export type DirectoryPerson = Pick<
-  Person,
-  "id" | "name" | "role" | "departmentId"
->;
+import type { Actor } from "@/types";
+import type { DirectoryPort } from "./directory";
 
 export type ActorResolver = (
   userId: string,
 ) => Promise<Actor | null> | Actor | null;
 
 export function createDirectoryActorResolver(
-  people: DirectoryPerson[],
+  directory: DirectoryPort,
 ): ActorResolver {
-  return (userId: string) => {
-    const person = people.find((p) => p.id === userId);
-    if (!person) return null;
-    return {
-      id: person.id,
-      name: person.name,
-      role: person.role,
-      departmentId: person.departmentId,
-    };
-  };
+  return (userId: string) => directory.findById(userId);
 }

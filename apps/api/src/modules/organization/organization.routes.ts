@@ -1,7 +1,15 @@
-import { Router, type NextFunction, type Request, type Response } from "express";
+import {
+  Router,
+  type NextFunction,
+  type Request,
+  type Response,
+} from "express";
 import { ROLES } from "@btctu/shared";
 import { formatIssues, problem } from "@/shared/problem";
-import type { OrganizationStore } from "./organization.repository";
+import {
+  isAssignmentActive,
+  type OrganizationStore,
+} from "./organization.repository";
 import {
   assignPositionSchema,
   createDepartmentSchema,
@@ -29,7 +37,9 @@ function requireLeader(req: Request, res: Response, next: NextFunction): void {
   );
 }
 
-export function createOrganizationRouter(options: OrganizationRouterOptions): Router {
+export function createOrganizationRouter(
+  options: OrganizationRouterOptions,
+): Router {
   const router = Router();
   const store = options.store;
 
@@ -40,24 +50,14 @@ export function createOrganizationRouter(options: OrganizationRouterOptions): Ro
         store.listCurrentAssignments(),
       ]);
 
-      if (depts.length === 0 && req.state) {
-        res.json({
-          data: {
-            departments: req.state.departments,
-            people: req.state.people,
-          },
-          meta: { sourceRef: "QĐ 01, Điều 2–7" },
-        });
-        return;
-      }
-
       const departments = depts.map((d) => ({
         id: d.id,
         code: d.officialCode ?? d.shortName ?? d.id,
         name: d.name,
         shortName: d.shortName ?? d.name,
         officialCode: d.officialCode,
-        sourceRef: "01-QĐ/BTCTU, Điều 2–6",
+        sourceRef: d.sourceRef,
+        sourceClass: d.sourceClass,
       }));
 
       const people = assignments.map((a) => ({
@@ -70,14 +70,13 @@ export function createOrganizationRouter(options: OrganizationRouterOptions): Ro
         departmentCode: a.departmentCode,
         positionRefId: a.positionId,
         assignmentType: a.assignmentType,
-        sourceRef: a.sourceRef ?? "01-QĐ/BTCTU, Điều 7",
+        sourceRef: a.sourceRef,
+        sourceClass: a.sourceClass,
       }));
 
       res.json({
         data: { departments, people },
         meta: {
-          sourceRef: "01-QĐ/BTCTU, Điều 2–7",
-          sourceClass: "FACT",
           totalDepartments: departments.length,
           totalPeople: people.length,
         },
@@ -111,7 +110,8 @@ export function createOrganizationRouter(options: OrganizationRouterOptions): Ro
           name: dept.name,
           shortName: dept.shortName,
           officialCode: dept.officialCode,
-          sourceRef: "01-QĐ/BTCTU, Điều 2–6",
+          sourceRef: dept.sourceRef,
+          sourceClass: dept.sourceClass,
           members: members.map((m) => ({
             id: m.externalId ?? m.personId,
             personId: m.personId,
@@ -123,10 +123,10 @@ export function createOrganizationRouter(options: OrganizationRouterOptions): Ro
             validFrom: m.validFrom,
             validTo: m.validTo,
             sourceRef: m.sourceRef,
+            sourceClass: m.sourceClass,
           })),
         },
         meta: {
-          sourceRef: "01-QĐ/BTCTU, Điều 2–7",
           totalMembers: members.length,
         },
       });
@@ -153,8 +153,7 @@ export function createOrganizationRouter(options: OrganizationRouterOptions): Ro
       const history = await store.listAssignmentsByPerson(person.id);
       const today = new Date().toISOString().slice(0, 10);
       const currentAssignment =
-        history.find((a) => !a.validTo || a.validTo >= today) ??
-        history[0] ??
+        history.find((assignment) => isAssignmentActive(assignment, today)) ??
         null;
 
       res.json({
@@ -162,7 +161,8 @@ export function createOrganizationRouter(options: OrganizationRouterOptions): Ro
           id: person.id,
           name: person.name,
           externalId: person.externalId,
-          sourceRef: person.sourceRef ?? "01-QĐ/BTCTU, Điều 2–7",
+          sourceRef: person.sourceRef,
+          sourceClass: person.sourceClass,
           currentAssignment: currentAssignment
             ? {
                 assignmentId: currentAssignment.assignmentId,
@@ -176,6 +176,7 @@ export function createOrganizationRouter(options: OrganizationRouterOptions): Ro
                 validFrom: currentAssignment.validFrom,
                 validTo: currentAssignment.validTo,
                 sourceRef: currentAssignment.sourceRef,
+                sourceClass: currentAssignment.sourceClass,
               }
             : null,
           history: history.map((h) => ({
@@ -190,10 +191,12 @@ export function createOrganizationRouter(options: OrganizationRouterOptions): Ro
             validFrom: h.validFrom,
             validTo: h.validTo,
             sourceRef: h.sourceRef,
+            sourceClass: h.sourceClass,
           })),
         },
         meta: {
-          sourceRef: person.sourceRef ?? "01-QĐ/BTCTU, Điều 2–7",
+          sourceRef: person.sourceRef,
+          sourceClass: person.sourceClass,
         },
       });
     } catch (error) {
@@ -201,10 +204,21 @@ export function createOrganizationRouter(options: OrganizationRouterOptions): Ro
     }
   });
 
-  const handleCreateDept = async (req: Request, res: Response, next: NextFunction) => {
+  const handleCreateDept = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
     const parsed = createDepartmentSchema.safeParse(req.body);
     if (!parsed.success) {
-      problem(req, res, 422, "Validation failed", formatIssues(parsed.error), "validation_failed");
+      problem(
+        req,
+        res,
+        422,
+        "Validation failed",
+        formatIssues(parsed.error),
+        "validation_failed",
+      );
       return;
     }
     try {
@@ -217,17 +231,37 @@ export function createOrganizationRouter(options: OrganizationRouterOptions): Ro
   router.post("/departments", requireLeader, handleCreateDept);
   router.post("/organizations/departments", requireLeader, handleCreateDept);
 
-  const handleUpdateDept = async (req: Request, res: Response, next: NextFunction) => {
+  const handleUpdateDept = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
     const parsed = updateDepartmentSchema.safeParse(req.body);
     if (!parsed.success) {
-      problem(req, res, 422, "Validation failed", formatIssues(parsed.error), "validation_failed");
+      problem(
+        req,
+        res,
+        422,
+        "Validation failed",
+        formatIssues(parsed.error),
+        "validation_failed",
+      );
       return;
     }
     try {
-      const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+      const id = Array.isArray(req.params.id)
+        ? req.params.id[0]
+        : req.params.id;
       const dept = await store.updateDepartment(id, parsed.data);
       if (!dept) {
-        problem(req, res, 404, "Not found", "Department does not exist.", "department_not_found");
+        problem(
+          req,
+          res,
+          404,
+          "Not found",
+          "Department does not exist.",
+          "department_not_found",
+        );
         return;
       }
       res.json({ data: dept });
@@ -236,12 +270,23 @@ export function createOrganizationRouter(options: OrganizationRouterOptions): Ro
     }
   };
   router.patch("/departments/:id", requireLeader, handleUpdateDept);
-  router.patch("/organizations/departments/:id", requireLeader, handleUpdateDept);
+  router.patch(
+    "/organizations/departments/:id",
+    requireLeader,
+    handleUpdateDept,
+  );
 
   router.post("/people", requireLeader, async (req, res, next) => {
     const parsed = createPersonSchema.safeParse(req.body);
     if (!parsed.success) {
-      problem(req, res, 422, "Validation failed", formatIssues(parsed.error), "validation_failed");
+      problem(
+        req,
+        res,
+        422,
+        "Validation failed",
+        formatIssues(parsed.error),
+        "validation_failed",
+      );
       return;
     }
     try {
@@ -255,14 +300,30 @@ export function createOrganizationRouter(options: OrganizationRouterOptions): Ro
   router.patch("/people/:id", requireLeader, async (req, res, next) => {
     const parsed = updatePersonSchema.safeParse(req.body);
     if (!parsed.success) {
-      problem(req, res, 422, "Validation failed", formatIssues(parsed.error), "validation_failed");
+      problem(
+        req,
+        res,
+        422,
+        "Validation failed",
+        formatIssues(parsed.error),
+        "validation_failed",
+      );
       return;
     }
     try {
-      const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+      const id = Array.isArray(req.params.id)
+        ? req.params.id[0]
+        : req.params.id;
       const person = await store.updatePerson(id, parsed.data);
       if (!person) {
-        problem(req, res, 404, "Not found", "Person does not exist.", "person_not_found");
+        problem(
+          req,
+          res,
+          404,
+          "Not found",
+          "Person does not exist.",
+          "person_not_found",
+        );
         return;
       }
       res.json({ data: person });
@@ -274,7 +335,14 @@ export function createOrganizationRouter(options: OrganizationRouterOptions): Ro
   router.post("/assignments", requireLeader, async (req, res, next) => {
     const parsed = assignPositionSchema.safeParse(req.body);
     if (!parsed.success) {
-      problem(req, res, 422, "Validation failed", formatIssues(parsed.error), "validation_failed");
+      problem(
+        req,
+        res,
+        422,
+        "Validation failed",
+        formatIssues(parsed.error),
+        "validation_failed",
+      );
       return;
     }
     try {
@@ -284,26 +352,47 @@ export function createOrganizationRouter(options: OrganizationRouterOptions): Ro
         store.findPositionById(parsed.data.positionId),
       ]);
       if (!person) {
-        problem(req, res, 404, "Not found", "Person does not exist.", "person_not_found");
+        problem(
+          req,
+          res,
+          404,
+          "Not found",
+          "Person does not exist.",
+          "person_not_found",
+        );
         return;
       }
       if (!dept) {
-        problem(req, res, 404, "Not found", "Department does not exist.", "department_not_found");
+        problem(
+          req,
+          res,
+          404,
+          "Not found",
+          "Department does not exist.",
+          "department_not_found",
+        );
         return;
       }
       if (!pos) {
-        problem(req, res, 404, "Not found", "Position does not exist.", "position_not_found");
+        problem(
+          req,
+          res,
+          404,
+          "Not found",
+          "Position does not exist.",
+          "position_not_found",
+        );
         return;
       }
-      const today = new Date().toISOString().slice(0, 10);
-      await store.endActiveAssignments(person.id, today);
-      const assignment = await store.createAssignment({
+      const validFrom =
+        parsed.data.validFrom ?? new Date().toISOString().slice(0, 10);
+      const assignment = await store.replaceAssignment({
         personId: person.id,
         departmentId: dept.id,
         positionId: pos.id,
         assignmentType: parsed.data.assignmentType,
-        validFrom: parsed.data.validFrom ?? today,
-        sourceRef: parsed.data.sourceRef ?? "01-QĐ/BTCTU, Điều 7",
+        validFrom,
+        sourceRef: parsed.data.sourceRef,
       });
       res.status(201).json({ data: assignment });
     } catch (error) {

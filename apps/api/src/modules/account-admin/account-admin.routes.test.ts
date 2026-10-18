@@ -3,8 +3,11 @@ import request from "supertest";
 import { createApp } from "@/app";
 import type { User } from "@/db/schema";
 import type { Env } from "@/env";
-import { createWorkspaceState } from "@/mock-state";
 import type { AuthPort } from "@/modules/auth/auth.types";
+import type {
+  DirectoryPerson,
+  DirectoryPort,
+} from "@/modules/identity/directory";
 import type { AccountAdminPort } from "./account-admin.service";
 
 const testEnv: Env = {
@@ -98,6 +101,13 @@ function accountAdmin(accounts: User[]): AccountAdminPort {
   };
 }
 
+function directory(people: DirectoryPerson[]): DirectoryPort {
+  return {
+    findById: async (id) => people.find((person) => person.id === id) ?? null,
+    list: async () => people,
+  };
+}
+
 describe("account administration routes", () => {
   it("rejects a regular account", async () => {
     const accounts = [user()];
@@ -114,7 +124,6 @@ describe("account administration routes", () => {
   });
 
   it("creates an account only for a directory person", async () => {
-    const state = createWorkspaceState();
     const admin = user({
       id: "admin-1",
       accountRole: "ACCOUNT_ADMIN",
@@ -125,7 +134,15 @@ describe("account administration routes", () => {
     const app = createApp(testEnv, {
       auth: authFor(accounts),
       accountAdmin: service,
-      state,
+      directory: directory([
+        {
+          id: "person-from-database",
+          name: "Nguyễn Văn Mới",
+          title: "Chuyên viên",
+          role: "cong_chuc",
+          departmentId: "department-1",
+        },
+      ]),
     });
 
     const response = await request(app)
@@ -133,14 +150,14 @@ describe("account administration routes", () => {
       .set("Authorization", "Bearer admin-1")
       .send({
         email: "new@btctu.local",
-        directoryActorId: "p-nguyen-tran-thi",
+        directoryActorId: "person-from-database",
         initialPassword: "temporary-password",
       });
 
     expect(response.status).toBe(201);
     expect(response.body.data).toMatchObject({
       email: "new@btctu.local",
-      directoryActorId: "p-nguyen-tran-thi",
+      directoryActorId: "person-from-database",
       mustChangePassword: true,
     });
     expect(service.create).toHaveBeenCalledOnce();

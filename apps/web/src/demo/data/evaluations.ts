@@ -38,7 +38,7 @@ export const EVALUATIONS: Evaluation[] = [
       },
     ],
     calc: {
-      ruleVersion: "05-HD/TU · Phụ lục 2 (lãnh đạo, quản lý)",
+      ruleVersion: "KPI hiện hành",
       formulaText: "KPI = (A + B + C + D) / 4; Tổng = Điểm chung + KPI × 70",
       kpiText: "82,3% (số liệu ghi trong văn bản)",
       averageAxes: 80.3,
@@ -256,7 +256,7 @@ export const EVALUATIONS: Evaluation[] = [
       {
         id: "h4",
         label: "Tỷ lệ Xuất sắc theo nhóm so sánh",
-        detail: "Trong hạn mức nhóm (chờ cấu hình QĐ39 được phê duyệt)",
+        detail: "Trong hạn mức nhóm",
         passed: true,
         blocking: true,
       },
@@ -312,7 +312,7 @@ export const EVALUATIONS: Evaluation[] = [
       },
     ],
     calc: {
-      ruleVersion: "05-HD/TU · Phụ lục 2 (lãnh đạo, quản lý)",
+      ruleVersion: "KPI hiện hành",
       formulaText: "KPI = (A + B + C + D) / 4; Tổng = Điểm chung + KPI × 70",
       kpiText: "84,8%",
       averageAxes: 84.8,
@@ -413,7 +413,7 @@ export const EVALUATIONS: Evaluation[] = [
       },
     ],
     calc: {
-      ruleVersion: "05-HD/TU · Phụ lục 2 (lãnh đạo, quản lý)",
+      ruleVersion: "KPI hiện hành",
       formulaText: "KPI = (A + B + C + D) / 4; Tổng = Điểm chung + KPI × 70",
       kpiText: "71%",
       averageAxes: 71,

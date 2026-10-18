@@ -92,7 +92,7 @@ export function CatalogModal({
               {selectedCount} công việc thuộc {version}. Không sửa các phiên bản
               cũ hoặc nhiệm vụ đã giao.
             </Callout>
-            <Field label="Căn cứ phát hành">
+            <Field label="Lý do phát hành">
               <Input
                 required
                 className="w-full"

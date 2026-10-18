@@ -38,7 +38,7 @@ export const catalogActions = {
     logged(
       "catalog.save",
       item.id,
-      `${item.code} · ${item.version} · DRAFT · ${item.sourceRef}`,
+      `${item.code} · ${item.version} · DRAFT`,
       "Đã lưu công việc nháp.",
     );
   },
@@ -91,7 +91,7 @@ export const catalogActions = {
   },
   publishVersion(version: string, reason: string) {
     actor("catalog.version.publish");
-    required(reason, "căn cứ phát hành");
+    required(reason, "lý do phát hành");
     assertDraft(version);
     const items = getState().catalog.filter((c) => c.version === version);
     if (!items.length) throw new Error("Phiên bản chưa có công việc.");
@@ -106,7 +106,7 @@ export const catalogActions = {
     logged(
       "catalog.version.publish",
       version,
-      `${items.length} mục. ${reason}. Các căn cứ nghiệp vụ phải được phê duyệt trước khi áp dụng chính thức.`,
+      `${items.length} mục. ${reason}.`,
       "Đã phát hành phiên bản. Các nhiệm vụ cũ giữ nguyên danh mục gốc.",
     );
   },

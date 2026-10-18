@@ -110,7 +110,6 @@ export function DepartmentCards({
               .map((r) => (
                 <li key={r.id}>
                   {r.name}
-                  <span className="mt-0.5 block text-ink-3">{r.sourceRef}</span>
                 </li>
               ))}
           </ul>

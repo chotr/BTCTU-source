@@ -39,7 +39,6 @@ const baseState: WorkspaceState = {
       standardScore: 25,
       coefficient: 1,
       durationDays: 15,
-      sourceRef: "05-HD/TU, Phụ lục công việc",
     },
     {
       id: "cat-02",
@@ -49,7 +48,6 @@ const baseState: WorkspaceState = {
       standardScore: 20,
       coefficient: 1,
       durationDays: 10,
-      sourceRef: "05-HD/TU, mục đánh giá quý",
     },
     {
       id: "cat-03",
@@ -59,7 +57,6 @@ const baseState: WorkspaceState = {
       standardScore: 15,
       coefficient: 0.8,
       durationDays: 7,
-      sourceRef: "Excel operational draft",
     },
   ],
   tasks: [],

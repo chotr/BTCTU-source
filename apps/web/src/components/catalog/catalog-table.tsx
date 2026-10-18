@@ -27,7 +27,6 @@ export function CatalogTable({
                 "Độ phức tạp",
                 "Điểm / hệ số",
                 "Thời hạn",
-                "Nguồn",
                 "",
               ].map((h, i) => (
                 <th className="p-3" key={i}>
@@ -52,9 +51,6 @@ export function CatalogTable({
                   {c.standardScore} / ×{c.coefficient}
                 </td>
                 <td className="p-3 whitespace-nowrap">{c.durationDays} ngày</td>
-                <td className="max-w-56 p-3 text-xs text-ink-3">
-                  {c.sourceRef}
-                </td>
                 <td className="p-3">
                   {allowed && c.status === "DRAFT" && (
                     <div className="flex gap-1">

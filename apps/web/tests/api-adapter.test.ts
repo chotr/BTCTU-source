@@ -28,7 +28,6 @@ describe("API adapter", () => {
           standardScore: 20,
           coefficient: 1.2,
           durationDays: 10,
-          sourceRef: "05-HD/TU",
         },
         "v1.1",
       ),
@@ -64,8 +63,6 @@ describe("API adapter", () => {
         departmentId: "dept-1",
         positionRefId: "position-1",
         assignmentType: "SECONDMENT",
-        sourceRef: null,
-        sourceClass: "UNVERIFIED",
       }),
     ).toMatchObject({
       id: "person-uuid",
@@ -83,7 +80,6 @@ describe("API adapter", () => {
         standardScore: 20,
         coefficient: 1,
         durationDays: 10,
-        sourceRef: "05-HD/TU",
       },
       "v1.1",
     );

@@ -32,11 +32,10 @@ export const ORG_TAB_FIELDS: Record<OrgTab, [string, string][]> = {
   ],
   positions: [
     ["title", "Tên vị trí"],
-    ["scope", "Nguồn / phạm vi tham chiếu"],
+    ["scope", "Phạm vi"],
   ],
   responsibilities: [
     ["name", "Trách nhiệm"],
     ["departmentId", "Đơn vị"],
-    ["sourceRef", "Nguồn / điều khoản"],
   ],
 };

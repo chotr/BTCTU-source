@@ -66,7 +66,6 @@ export function validateCatalog(
     name: required(input.name, "tên công việc"),
     product: required(input.product, "sản phẩm"),
     unit: required(input.unit, "đơn vị tính"),
-    sourceRef: required(input.sourceRef, "nguồn dữ liệu"),
     version: required(input.version, "phiên bản"),
   };
   if (!/^[\p{L}\d._-]+$/u.test(item.code))

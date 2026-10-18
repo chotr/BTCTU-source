@@ -62,7 +62,6 @@ export default function CatalogPage() {
         durationDays: 7,
         version,
         status: "DRAFT",
-        sourceRef: "Nhập tay",
       },
     );
   }

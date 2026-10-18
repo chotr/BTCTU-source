@@ -12,7 +12,6 @@ export const CATALOG: CatalogItem[] = [
     standardScore: 12,
     coefficient: 1.0,
     durationDays: 15,
-    sourceRef: "05-HD/TU PL1 · Excel draft",
     status: "PUBLISHED",
   },
   {
@@ -26,7 +25,6 @@ export const CATALOG: CatalogItem[] = [
     standardScore: 14,
     coefficient: 1.1,
     durationDays: 10,
-    sourceRef: "05-HD/TU PL1 · Excel draft",
     status: "PUBLISHED",
   },
   {
@@ -40,7 +38,6 @@ export const CATALOG: CatalogItem[] = [
     standardScore: 8,
     coefficient: 0.9,
     durationDays: 7,
-    sourceRef: "05-HD/TU PL1 · Excel draft",
     status: "PUBLISHED",
   },
   {
@@ -54,7 +51,6 @@ export const CATALOG: CatalogItem[] = [
     standardScore: 9,
     coefficient: 1.0,
     durationDays: 7,
-    sourceRef: "05-HD/TU PL1 · Excel draft",
     status: "PUBLISHED",
   },
   {
@@ -68,7 +64,6 @@ export const CATALOG: CatalogItem[] = [
     standardScore: 10,
     coefficient: 1.0,
     durationDays: 10,
-    sourceRef: "05-HD/TU PL1 · Excel draft",
     status: "PUBLISHED",
   },
   {
@@ -82,7 +77,6 @@ export const CATALOG: CatalogItem[] = [
     standardScore: 8,
     coefficient: 0.9,
     durationDays: 8,
-    sourceRef: "05-HD/TU PL1 · Excel draft",
     status: "PUBLISHED",
   },
   {
@@ -96,7 +90,6 @@ export const CATALOG: CatalogItem[] = [
     standardScore: 6,
     coefficient: 0.8,
     durationDays: 5,
-    sourceRef: "05-HD/TU PL1 · Excel draft",
     status: "PUBLISHED",
   },
   {
@@ -110,7 +103,6 @@ export const CATALOG: CatalogItem[] = [
     standardScore: 12,
     coefficient: 1.0,
     durationDays: 12,
-    sourceRef: "05-HD/TU PL1 · Excel draft",
     status: "PUBLISHED",
   },
   {
@@ -124,7 +116,6 @@ export const CATALOG: CatalogItem[] = [
     standardScore: 10,
     coefficient: 1.0,
     durationDays: 15,
-    sourceRef: "05-HD/TU PL1 · Excel draft",
     status: "DRAFT",
   },
   {
@@ -138,7 +129,6 @@ export const CATALOG: CatalogItem[] = [
     standardScore: 7,
     coefficient: 0.9,
     durationDays: 7,
-    sourceRef: "05-HD/TU PL1 · Excel draft",
     status: "DRAFT",
   },
   {
@@ -152,7 +142,6 @@ export const CATALOG: CatalogItem[] = [
     standardScore: 9,
     coefficient: 1.0,
     durationDays: 10,
-    sourceRef: "05-HD/TU PL1 · Excel draft",
     status: "DRAFT",
   },
 ];

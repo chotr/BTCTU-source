@@ -23,8 +23,6 @@ type ApiAssignmentHistory = {
   assignmentType: string;
   validFrom: string | null;
   validTo: string | null;
-  sourceRef: string | null;
-  sourceClass: string;
 };
 
 /** Modal lịch sử thành viên của một nhân sự. */
@@ -99,16 +97,6 @@ export function HistoryModal({
                     : "Đang công tác"}
                 {h.assignmentType === "SECONDMENT" ? " (Biệt phái)" : ""}
               </p>
-              {h.sourceRef && (
-                <p className="mt-0.5 text-[11px] text-ink-3">
-                  Căn cứ: {h.sourceRef}
-                </p>
-              )}
-              {h.sourceClass === "UNVERIFIED" && (
-                <p className="mt-0.5 text-[11px] text-warn-700">
-                  Nguồn chưa được xác minh
-                </p>
-              )}
             </div>
           ))
         ) : (

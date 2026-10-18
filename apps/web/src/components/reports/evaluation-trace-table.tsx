@@ -7,7 +7,6 @@ import { evaluationLabel, evaluationTotal } from "@/lib/api";
 import type { AppState } from "@/lib/store";
 import type { Evaluation } from "@/lib/types";
 
-/** Bảng truy vết đánh giá kèm nguồn/phiên bản quy tắc. */
 export function EvaluationTraceTable({
   evaluations,
   state,
@@ -26,7 +25,7 @@ export function EvaluationTraceTable({
                 "Đối tượng",
                 "Điểm tính",
                 "Quyết định",
-                "Nguồn / phiên bản",
+                "Phiên bản quy tắc",
               ].map((h) => (
                 <th key={h} className="p-3">
                   {h}
@@ -60,9 +59,6 @@ export function EvaluationTraceTable({
                 </td>
                 <td className="max-w-xs p-3 text-xs text-ink-3">
                   {e.calc.ruleVersion}
-                  <p className="mt-1">
-                    05-HD/TU → KPI cấu hình → QĐ39 / điều kiện → quyết định
-                  </p>
                 </td>
               </tr>
             ))}

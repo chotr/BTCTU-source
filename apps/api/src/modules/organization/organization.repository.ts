@@ -33,8 +33,6 @@ export type OrganizationAssignment = {
   assignmentType: "STAFF" | "SECONDMENT";
   validFrom: string | null;
   validTo: string | null;
-  sourceRef: string | null;
-  sourceClass: string | null;
 };
 
 export function isAssignmentActive(
@@ -68,11 +66,10 @@ export interface OrganizationStore {
   createPerson(data: {
     name: string;
     externalId?: string;
-    sourceRef?: string;
   }): Promise<Person>;
   updatePerson(
     id: string,
-    data: { name?: string; sourceRef?: string },
+    data: { name?: string },
   ): Promise<Person | null>;
   findPositionById(id: string): Promise<Position | null>;
   replaceAssignment(data: {
@@ -81,7 +78,6 @@ export interface OrganizationStore {
     departmentId: string;
     assignmentType: "STAFF" | "SECONDMENT";
     validFrom: string;
-    sourceRef?: string;
   }): Promise<PositionAssignment>;
 }
 
@@ -125,8 +121,6 @@ export class DatabaseOrganizationStore implements OrganizationStore {
         assignmentType: positionAssignments.assignmentType,
         validFrom: positionAssignments.validFrom,
         validTo: positionAssignments.validTo,
-        sourceRef: positionAssignments.sourceRef,
-        sourceClass: positionAssignments.sourceClass,
       })
       .from(positionAssignments)
       .innerJoin(people, eq(positionAssignments.personId, people.id))
@@ -174,8 +168,6 @@ export class DatabaseOrganizationStore implements OrganizationStore {
         assignmentType: positionAssignments.assignmentType,
         validFrom: positionAssignments.validFrom,
         validTo: positionAssignments.validTo,
-        sourceRef: positionAssignments.sourceRef,
-        sourceClass: positionAssignments.sourceClass,
       })
       .from(positionAssignments)
       .innerJoin(people, eq(positionAssignments.personId, people.id))
@@ -235,8 +227,6 @@ export class DatabaseOrganizationStore implements OrganizationStore {
         assignmentType: positionAssignments.assignmentType,
         validFrom: positionAssignments.validFrom,
         validTo: positionAssignments.validTo,
-        sourceRef: positionAssignments.sourceRef,
-        sourceClass: positionAssignments.sourceClass,
       })
       .from(positionAssignments)
       .innerJoin(people, eq(positionAssignments.personId, people.id))
@@ -277,7 +267,6 @@ export class DatabaseOrganizationStore implements OrganizationStore {
   async createPerson(data: {
     name: string;
     externalId?: string;
-    sourceRef?: string;
   }): Promise<Person> {
     const [p] = await this.db.insert(people).values(data).returning();
     return p;
@@ -285,7 +274,7 @@ export class DatabaseOrganizationStore implements OrganizationStore {
 
   async updatePerson(
     id: string,
-    data: { name?: string; sourceRef?: string },
+    data: { name?: string },
   ): Promise<Person | null> {
     const target = await this.findPersonById(id);
     if (!target) return null;
@@ -316,7 +305,6 @@ export class DatabaseOrganizationStore implements OrganizationStore {
     departmentId: string;
     assignmentType: "STAFF" | "SECONDMENT";
     validFrom: string;
-    sourceRef?: string;
   }): Promise<PositionAssignment> {
     return this.db.transaction(async (tx) => {
       await tx.execute(
@@ -334,10 +322,7 @@ export class DatabaseOrganizationStore implements OrganizationStore {
 
       const [assignment] = await tx
         .insert(positionAssignments)
-        .values({
-          ...data,
-          sourceClass: "UNVERIFIED",
-        })
+        .values(data)
         .returning();
       return assignment;
     });

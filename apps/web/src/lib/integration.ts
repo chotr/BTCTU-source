@@ -8,17 +8,14 @@ import {
 import { canManage } from "./policy";
 export const PROFILES = {
   personnel: {
-    name: "Hồ sơ nhân sự · QĐ607",
+    name: "Hồ sơ nhân sự",
     contract: "OAuth 2.0 Client Credentials + JWT",
     fields: ["personnelCode", "fullName", "organizationCode"],
-    source: "QĐ607 / QĐ308",
   },
   lgsp: {
-    name: "Kết nối LGSP · HD07",
-    contract:
-      "Profile cổng tích hợp HD07 riêng; không đồng nhất với OAuth QĐ607",
+    name: "Kết nối LGSP",
+    contract: "Cấu hình cổng tích hợp riêng.",
     fields: ["personnelCode", "fullName", "organizationCode"],
-    source: "HD07 / QĐ348",
   },
 } as const;
 export type ProfileKey = keyof typeof PROFILES;
@@ -63,7 +60,7 @@ export function saveMappings(
     actorId: getState().user!.id,
     action: "Cấu hình mapping",
     resource: "integration",
-    detail: "Ánh xạ QĐ308/QĐ607; chỉ trường trong allowlist",
+    detail: "Ánh xạ trường trong allowlist",
     outcome: "OK",
   });
   pushToast("success", "Đã lưu ánh xạ dữ liệu");

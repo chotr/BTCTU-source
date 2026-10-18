@@ -6,7 +6,6 @@ import {
   type Task,
 } from "./types";
 
-// Chính sách giao diện giúp tăng khả dụng; API vẫn là nơi thực thi có thẩm quyền.
 export const canManage = (u: AppUser | null) => u?.role === ROLES.lanhDao;
 export const canAssign = (u: AppUser | null) =>
   !!u && u.role !== ROLES.congChuc;

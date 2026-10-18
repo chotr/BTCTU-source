@@ -10,7 +10,7 @@ export const referenceActions = {
       ...input,
       id: input.id || uid("position"),
       title: required(input.title, "tên vị trí"),
-      scope: required(input.scope, "nguồn/phạm vi tham chiếu"),
+      scope: required(input.scope, "phạm vi"),
     };
     if (
       getState().positions.some(
@@ -29,8 +29,8 @@ export const referenceActions = {
     logged(
       "position.save",
       item.id,
-      `${item.title} · ${item.scope}. Danh mục tham chiếu.`,
-      "Đã lưu vị trí tham chiếu.",
+      `${item.title} · ${item.scope}.`,
+      "Đã lưu vị trí.",
     );
   },
   removePosition(id: string) {
@@ -62,7 +62,6 @@ export const referenceActions = {
       ...input,
       id: input.id || uid("responsibility"),
       name: required(input.name, "trách nhiệm"),
-      sourceRef: required(input.sourceRef, "nguồn/điều khoản"),
     };
     setState((s) => ({
       ...s,
@@ -80,7 +79,7 @@ export const referenceActions = {
     logged(
       "responsibility.save",
       item.id,
-      `${item.name} · ${item.sourceRef}`,
+      item.name,
       "Đã lưu trách nhiệm.",
     );
   },
@@ -97,7 +96,7 @@ export const referenceActions = {
     logged(
       "responsibility.delete",
       id,
-      "Xóa liên kết trách nhiệm trong cấu hình; không sửa nguồn pháp lý.",
+      "Xóa liên kết trách nhiệm trong cấu hình.",
       "Đã xóa trách nhiệm.",
     );
   },

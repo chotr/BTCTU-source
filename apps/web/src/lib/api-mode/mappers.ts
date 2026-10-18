@@ -67,7 +67,6 @@ export function mapApiCatalogItem(
     standardScore: item.standardScore,
     coefficient: item.coefficient,
     durationDays: item.durationDays,
-    sourceRef: item.sourceRef,
     status: item.version === publishedVersion ? "PUBLISHED" : "DRAFT",
   };
 }
@@ -97,8 +96,6 @@ export function mapApiPerson(item: ApiPerson): Person {
     departmentId: item.departmentId,
     positionRefId: item.positionRefId,
     assignmentType: item.assignmentType,
-    sourceRef: item.sourceRef,
-    sourceClass: item.sourceClass,
   };
 }
 
@@ -175,7 +172,6 @@ export function mapApiTask(task: ApiTask, state: TaskContext): Task {
           standardScore: catalog.standardScore,
           coefficient: catalog.coefficient,
           durationDays: catalog.durationDays,
-          sourceRef: catalog.sourceRef,
         }
       : undefined,
     assignmentSnapshot: {

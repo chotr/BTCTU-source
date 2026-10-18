@@ -59,7 +59,7 @@ export default function AuditPage() {
     <div>
       <SectionHeader
         title="Nhật ký hoạt động"
-        hint="Ghi vết mọi truy cập, cập nhật, phê duyệt — yêu cầu kiểm toán từ QĐ342"
+        hint="Ghi vết mọi truy cập, cập nhật và phê duyệt."
         actions={
           <Button
             variant="secondary"

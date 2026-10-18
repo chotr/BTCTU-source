@@ -25,8 +25,6 @@ export type ApiDepartment = {
   code: string;
   name: string;
   shortName: string;
-  sourceRef: string | null;
-  sourceClass: string;
 };
 
 export type ApiPerson = {
@@ -37,8 +35,6 @@ export type ApiPerson = {
   departmentId: string;
   positionRefId: string;
   assignmentType: "STAFF" | "SECONDMENT";
-  sourceRef: string | null;
-  sourceClass: string;
 };
 
 export type ApiCatalogItem = {
@@ -49,7 +45,6 @@ export type ApiCatalogItem = {
   standardScore: number;
   coefficient: number;
   durationDays: number;
-  sourceRef: string;
 };
 
 export type ApiTaskResult = {

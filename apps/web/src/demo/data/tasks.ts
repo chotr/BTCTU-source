@@ -23,7 +23,7 @@ export const TASKS: Task[] = [
         at: "2026-07-02T08:10:00+07:00",
         actorId: "u-head",
         action: "Phân công nhiệm vụ",
-        note: "Gắn vị trí việc làm: Công chức (QĐ01 Điều 7)",
+        note: "Gắn vị trí việc làm: Công chức",
       },
       {
         id: "t1h2",
@@ -230,7 +230,7 @@ export const TASKS: Task[] = [
         at: "2026-09-15T08:45:00+07:00",
         actorId: "p1head",
         action: "Yêu cầu chỉnh sửa",
-        note: "Bổ sung mốc thời gian nộp hồ sơ theo 39-QĐ/TU",
+        note: "Bổ sung mốc thời gian nộp hồ sơ",
       },
     ],
   },

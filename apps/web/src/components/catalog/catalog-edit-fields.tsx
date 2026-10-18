@@ -19,7 +19,6 @@ export function CatalogEditFields({
           ["name", "Tên công việc"],
           ["product", "Sản phẩm"],
           ["unit", "Đơn vị tính"],
-          ["sourceRef", "Nguồn dữ liệu"],
         ] as const
       ).map(([key, label]) => (
         <Field key={key} label={label}>

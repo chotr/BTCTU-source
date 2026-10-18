@@ -42,7 +42,6 @@ export function createReportingRouter(): Router {
         ),
         averageScore,
       },
-      meta: { sourceRef: "Dữ liệu đánh giá trong kỳ" },
     });
   });
 

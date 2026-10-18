@@ -54,7 +54,7 @@ export default function ReportsPage() {
         )
         .join(
           "\n",
-        )}\n\n3. Nội dung cần rà soát\nĐối chiếu thẩm quyền, điều kiện QĐ39 và căn cứ từng hồ sơ trước khi sử dụng.\n\nNgười rà soát: ................................`,
+        )}\n\n3. Nội dung cần rà soát\nĐối chiếu thẩm quyền và điều kiện của từng hồ sơ trước khi sử dụng.\n\nNgười rà soát: ................................`,
     );
     appendAudit({
       actorId: state.user!.id,

@@ -72,7 +72,6 @@ export const lifecycleActions = {
         standardScore: cat.standardScore,
         coefficient: cat.coefficient,
         durationDays: cat.durationDays,
-        sourceRef: cat.sourceRef,
       },
       assignmentSnapshot: {
         assigneeName: person.name,

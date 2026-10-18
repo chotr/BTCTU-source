@@ -1,6 +1,5 @@
 import type { ConditionCheck } from "@/lib/types";
 
-/** Danh mục điều kiện bắt buộc đề xuất theo QĐ39 Điều 11. */
 export const initialConditions = (): ConditionCheck[] => [
   {
     id: "compliance",
@@ -14,7 +13,7 @@ export const initialConditions = (): ConditionCheck[] => [
     id: "mandatory",
     label: "Đủ điều kiện bắt buộc của nhóm đối tượng",
     detail:
-      "Checklist theo QĐ39 Điều 11; thẩm quyền và điều kiện cụ thể còn chờ xác nhận.",
+      "Checklist áp dụng theo từng nhóm đối tượng.",
     passed: false,
     blocking: true,
   },

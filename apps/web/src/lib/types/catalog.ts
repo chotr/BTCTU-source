@@ -11,6 +11,5 @@ export interface CatalogItem {
   standardScore: number;
   coefficient: number;
   durationDays: number;
-  sourceRef: string;
   status: CatalogStatus;
 }

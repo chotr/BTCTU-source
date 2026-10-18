@@ -43,8 +43,6 @@ class MemoryOrganizationStore implements OrganizationStore {
       name: "Phòng Tổ chức cán bộ",
       shortName: "Tổ chức cán bộ",
       officialCode: "TCCB",
-      sourceRef: "01-QĐ/BTCTU, Điều 2–6",
-      sourceClass: "FACT",
       createdAt: new Date(),
     },
     {
@@ -52,8 +50,6 @@ class MemoryOrganizationStore implements OrganizationStore {
       name: "Lãnh đạo Ban",
       shortName: "Lãnh đạo Ban",
       officialCode: "LĐB",
-      sourceRef: "01-QĐ/BTCTU, Điều 2–6",
-      sourceClass: "FACT",
       createdAt: new Date(),
     },
   ];
@@ -63,16 +59,12 @@ class MemoryOrganizationStore implements OrganizationStore {
       id: "person-1",
       name: "Nguyễn Thượng Hải",
       externalId: "p-nguyen-thuong-hai",
-      sourceRef: "01-QĐ/BTCTU, Điều 2–6",
-      sourceClass: "FACT",
       createdAt: new Date(),
     },
     {
       id: "person-2",
       name: "Trần Hải Triều",
       externalId: "p-tran-hai-trieu",
-      sourceRef: "01-QĐ/BTCTU, Điều 4",
-      sourceClass: "FACT",
       createdAt: new Date(),
     },
   ];
@@ -102,8 +94,6 @@ class MemoryOrganizationStore implements OrganizationStore {
     assignmentType: "STAFF" | "SECONDMENT";
     validFrom: string | null;
     validTo: string | null;
-    sourceRef: string | null;
-    sourceClass: string | null;
     createdAt: Date;
   }> = [
     {
@@ -114,8 +104,6 @@ class MemoryOrganizationStore implements OrganizationStore {
       assignmentType: "STAFF",
       validFrom: "2025-01-01",
       validTo: null,
-      sourceRef: "01-QĐ/BTCTU, Điều 2–6",
-      sourceClass: "FACT",
       createdAt: new Date(),
     },
     {
@@ -126,8 +114,6 @@ class MemoryOrganizationStore implements OrganizationStore {
       assignmentType: "STAFF",
       validFrom: "2025-01-01",
       validTo: null,
-      sourceRef: "01-QĐ/BTCTU, Điều 4",
-      sourceClass: "FACT",
       createdAt: new Date(),
     },
   ];
@@ -166,8 +152,6 @@ class MemoryOrganizationStore implements OrganizationStore {
           assignmentType: a.assignmentType,
           validFrom: a.validFrom,
           validTo: a.validTo,
-          sourceRef: a.sourceRef,
-          sourceClass: a.sourceClass,
         };
       });
   }
@@ -209,8 +193,6 @@ class MemoryOrganizationStore implements OrganizationStore {
           assignmentType: a.assignmentType,
           validFrom: a.validFrom,
           validTo: a.validTo,
-          sourceRef: a.sourceRef,
-          sourceClass: a.sourceClass,
         };
       });
   }
@@ -225,8 +207,6 @@ class MemoryOrganizationStore implements OrganizationStore {
       name: data.name,
       shortName: data.shortName ?? null,
       officialCode: data.officialCode ?? null,
-      sourceRef: null,
-      sourceClass: "UNVERIFIED",
       createdAt: new Date(),
     };
     this.departments.push(created);
@@ -251,14 +231,11 @@ class MemoryOrganizationStore implements OrganizationStore {
   async createPerson(data: {
     name: string;
     externalId?: string;
-    sourceRef?: string;
   }): Promise<Person> {
     const created: Person = {
       id: `person-${this.people.length + 1}`,
       name: data.name,
       externalId: data.externalId ?? null,
-      sourceRef: data.sourceRef ?? null,
-      sourceClass: "UNVERIFIED",
       createdAt: new Date(),
     };
     this.people.push(created);
@@ -267,7 +244,7 @@ class MemoryOrganizationStore implements OrganizationStore {
 
   async updatePerson(
     id: string,
-    data: { name?: string; externalId?: string; sourceRef?: string },
+    data: { name?: string; externalId?: string },
   ): Promise<Person | null> {
     const index = this.people.findIndex(
       (p) => p.id === id,
@@ -292,7 +269,6 @@ class MemoryOrganizationStore implements OrganizationStore {
     departmentId: string;
     assignmentType: "STAFF" | "SECONDMENT";
     validFrom: string;
-    sourceRef?: string;
   }): Promise<PositionAssignment> {
     for (const assignment of this.assignments) {
       if (
@@ -310,8 +286,6 @@ class MemoryOrganizationStore implements OrganizationStore {
       assignmentType: data.assignmentType,
       validFrom: data.validFrom,
       validTo: null,
-      sourceRef: data.sourceRef ?? null,
-      sourceClass: "UNVERIFIED",
       createdAt: new Date(),
     };
     this.assignments.push(created);
@@ -369,8 +343,6 @@ describe("organization HTTP routes", () => {
       id: "dept-1",
       name: "Phòng Tổ chức cán bộ",
       code: "TCCB",
-      sourceRef: "01-QĐ/BTCTU, Điều 2–6",
-      sourceClass: "FACT",
     });
     expect(res.body.data.people).toHaveLength(2);
     expect(res.body.data.people[0]).toMatchObject({
@@ -380,7 +352,6 @@ describe("organization HTTP routes", () => {
       role: "lanh_dao",
       departmentId: "dept-0",
     });
-    expect(res.body.data.people[0].sourceClass).toBe("FACT");
   });
 
   it("GET /api/v1/organizations/:departmentId returns department detail and its members", async () => {

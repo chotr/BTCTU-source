@@ -20,8 +20,6 @@ describe("OrganizationDirectory", () => {
           assignmentType: "STAFF" as const,
           validFrom: "2026-01-01",
           validTo: null,
-          sourceRef: null,
-          sourceClass: "UNVERIFIED",
         },
       ],
     } as OrganizationStore;

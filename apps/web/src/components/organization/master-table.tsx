@@ -63,7 +63,7 @@ export function MasterTable({
                         }
                       </>
                     ) : (
-                      (r.scope ?? r.sourceRef)
+                      r.scope
                     )}
                   </td>
                   <td className="p-3">

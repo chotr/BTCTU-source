@@ -16,7 +16,6 @@ const CSV_FIELDS = [
   "standardScore",
   "coefficient",
   "durationDays",
-  "sourceRef",
 ] as const;
 
 function parseCsv(text: string): string[][] {
@@ -93,7 +92,6 @@ export function previewCatalogCsv(text: string, version: string): ImportRow[] {
       standardScore: Number(values.standardScore),
       coefficient: Number(values.coefficient),
       durationDays: Number(values.durationDays),
-      sourceRef: values.sourceRef,
     };
     const errors: string[] = [];
     if (cells.length !== header.length) errors.push("Số ô không khớp tiêu đề.");
@@ -110,4 +108,4 @@ export function previewCatalogCsv(text: string, version: string): ImportRow[] {
   });
 }
 
-export const catalogCsvTemplate = `${CSV_FIELDS.join(",")}\nNV-DEV-01,Tổng hợp số liệu,Báo cáo tổng hợp,Báo cáo,Trung bình,8,1,7,Danh mục vận hành\n`;
+export const catalogCsvTemplate = `${CSV_FIELDS.join(",")}\nNV-DEV-01,Tổng hợp số liệu,Báo cáo tổng hợp,Báo cáo,Trung bình,8,1,7\n`;

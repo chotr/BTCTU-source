@@ -49,27 +49,27 @@ export const DEPARTMENTS: Department[] = [
 ];
 
 export const POSITIONS: PositionRef[] = [
-  { id: "pos-head", title: "Trưởng phòng", scope: "Cơ cấu theo QĐ01 Điều 3–6" },
+  { id: "pos-head", title: "Trưởng phòng", scope: "Cơ cấu hiện hành" },
   {
     id: "pos-deputy",
     title: "Phó Trưởng phòng",
-    scope: "Cơ cấu theo QĐ01 Điều 3–6",
+    scope: "Cơ cấu hiện hành",
   },
-  { id: "pos-staff", title: "Công chức", scope: "Cơ cấu theo QĐ01 Điều 3–6" },
+  { id: "pos-staff", title: "Công chức", scope: "Cơ cấu hiện hành" },
   {
     id: "pos-chief-vp",
     title: "Chánh Văn phòng",
-    scope: "Cơ cấu theo QĐ01 Điều 6",
+    scope: "Cơ cấu hiện hành",
   },
   {
     id: "pos-worker",
     title: "Người lao động",
-    scope: "Cơ cấu theo QĐ01 Điều 6",
+    scope: "Cơ cấu hiện hành",
   },
   {
     id: "pos-police",
     title: "Cán bộ công an biệt phái",
-    scope: "Cơ cấu theo QĐ01 Điều 5",
+    scope: "Cơ cấu hiện hành",
   },
 ];
 
@@ -172,72 +172,60 @@ export const RESPONSIBILITIES: ResponsibilityRef[] = [
     id: "r1a",
     departmentId: "d1",
     name: "Quản lý hồ sơ và cơ sở dữ liệu đảng viên",
-    sourceRef: "QĐ01 · Điều 3",
   },
   {
     id: "r1b",
     departmentId: "d1",
     name: "Đánh giá, xếp loại tổ chức đảng, đảng viên",
-    sourceRef: "QĐ01 · Điều 3",
   },
   {
     id: "r1c",
     departmentId: "d1",
     name: "Hướng dẫn, thẩm định về tổ chức đảng, đảng viên",
-    sourceRef: "QĐ01 · Điều 3",
   },
   {
     id: "r2a",
     departmentId: "d2",
     name: "Quản lý hồ sơ cán bộ diện Tỉnh ủy quản lý",
-    sourceRef: "QĐ01 · Điều 4",
   },
   {
     id: "r2b",
     departmentId: "d2",
     name: "Thẩm định nhân sự quy hoạch, bổ nhiệm, điều động",
-    sourceRef: "QĐ01 · Điều 4",
   },
   {
     id: "r2c",
     departmentId: "d2",
     name: "Đào tạo, bồi dưỡng và chính sách cán bộ",
-    sourceRef: "QĐ01 · Điều 4",
   },
   {
     id: "r3a",
     departmentId: "d3",
     name: "Thẩm tra, xác minh vấn đề chính trị",
-    sourceRef: "QĐ01 · Điều 5",
   },
   {
     id: "r3b",
     departmentId: "d3",
     name: "Quản lý hồ sơ BVCTNB",
-    sourceRef: "QĐ01 · Điều 5",
   },
   {
     id: "r3c",
     departmentId: "d3",
     name: "Tiếp nhận, xử lý đơn thư liên quan chính trị",
-    sourceRef: "QĐ01 · Điều 5",
   },
   {
     id: "r4a",
     departmentId: "d4",
     name: "Tổng hợp chương trình, kế hoạch công tác",
-    sourceRef: "QĐ01 · Điều 6",
   },
   {
     id: "r4b",
     departmentId: "d4",
     name: "Chế độ thông tin, báo cáo định kỳ",
-    sourceRef: "QĐ01 · Điều 6",
   },
   {
     id: "r4c",
     departmentId: "d4",
     name: "Công tác nhân sự nội bộ của Ban",
-    sourceRef: "QĐ01 · Điều 6",
   },
 ];

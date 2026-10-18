@@ -21,7 +21,7 @@ export function MappingCard({
       <h2 className="mb-4 text-sm font-semibold">Ánh xạ từ điển dữ liệu</h2>
       <div className="space-y-4">
         {mappings.map((m, i) => (
-          <Field key={m.field} label={m.field} hint={m.source}>
+          <Field key={m.field} label={m.field}>
             <Select
               className="w-full"
               value={m.target}

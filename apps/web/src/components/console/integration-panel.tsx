@@ -44,9 +44,8 @@ export function IntegrationPanel() {
         <Badge tone="warn">CHỜ API</Badge>
       </div>
       <Callout title="Hai profile contract độc lập" tone="neutral">
-        QĐ607 và HD07 không được gộp thành một cơ chế xác thực. Các trường bên
-        dưới là ánh xạ đang chờ phê duyệt dựa trên QĐ308/QĐ607; endpoint, quyền,
-        scope và cấu hình kết nối đang trong quá trình hoàn thiện.
+        Mỗi kết nối có cơ chế xác thực riêng. Endpoint, quyền, scope và cấu hình
+        kết nối đang trong quá trình hoàn thiện.
       </Callout>
       <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-2">
         <SyncPanel

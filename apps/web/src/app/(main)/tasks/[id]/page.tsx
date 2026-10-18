@@ -137,9 +137,6 @@ function TaskWorkspace({ task }: { task: Task }) {
                 </div>
               ))}
             </dl>
-            <p className="mt-4 text-xs text-ink-3">
-              Nguồn: {catalog?.sourceRef ?? "—"}
-            </p>
             {!isApiWorkspace() &&
               editable &&
               canReviewTask(user, task.departmentId) && (

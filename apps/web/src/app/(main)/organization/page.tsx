@@ -115,7 +115,6 @@ export default function OrganizationPage() {
             id,
             name: form.name ?? "",
             departmentId: form.departmentId,
-            sourceRef: form.sourceRef ?? "",
           });
       }
       setForm(null);

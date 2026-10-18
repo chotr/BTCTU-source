@@ -11,7 +11,6 @@ CREATE TABLE "people" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"name" varchar(255) NOT NULL,
 	"external_id" varchar(255),
-	"source_ref" varchar(255),
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
@@ -23,8 +22,6 @@ CREATE TABLE "position_assignments" (
 	"assignment_type" "assignment_type" NOT NULL,
 	"valid_from" date,
 	"valid_to" date,
-	"source_ref" varchar(255),
-	"source_class" varchar(32),
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint

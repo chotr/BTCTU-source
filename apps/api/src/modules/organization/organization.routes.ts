@@ -56,8 +56,6 @@ export function createOrganizationRouter(
         name: d.name,
         shortName: d.shortName ?? d.name,
         officialCode: d.officialCode,
-        sourceRef: d.sourceRef,
-        sourceClass: d.sourceClass,
       }));
 
       const people = assignments.map((a) => ({
@@ -70,8 +68,6 @@ export function createOrganizationRouter(
         departmentCode: a.departmentCode,
         positionRefId: a.positionId,
         assignmentType: a.assignmentType,
-        sourceRef: a.sourceRef,
-        sourceClass: a.sourceClass,
       }));
 
       res.json({
@@ -110,8 +106,6 @@ export function createOrganizationRouter(
           name: dept.name,
           shortName: dept.shortName,
           officialCode: dept.officialCode,
-          sourceRef: dept.sourceRef,
-          sourceClass: dept.sourceClass,
           members: members.map((m) => ({
             id: m.personId,
             personId: m.personId,
@@ -122,8 +116,6 @@ export function createOrganizationRouter(
             positionId: m.positionId,
             validFrom: m.validFrom,
             validTo: m.validTo,
-            sourceRef: m.sourceRef,
-            sourceClass: m.sourceClass,
           })),
         },
         meta: {
@@ -161,8 +153,6 @@ export function createOrganizationRouter(
           id: person.id,
           name: person.name,
           externalId: person.externalId,
-          sourceRef: person.sourceRef,
-          sourceClass: person.sourceClass,
           currentAssignment: currentAssignment
             ? {
                 assignmentId: currentAssignment.assignmentId,
@@ -175,8 +165,6 @@ export function createOrganizationRouter(
                 assignmentType: currentAssignment.assignmentType,
                 validFrom: currentAssignment.validFrom,
                 validTo: currentAssignment.validTo,
-                sourceRef: currentAssignment.sourceRef,
-                sourceClass: currentAssignment.sourceClass,
               }
             : null,
           history: history.map((h) => ({
@@ -190,13 +178,7 @@ export function createOrganizationRouter(
             assignmentType: h.assignmentType,
             validFrom: h.validFrom,
             validTo: h.validTo,
-            sourceRef: h.sourceRef,
-            sourceClass: h.sourceClass,
           })),
-        },
-        meta: {
-          sourceRef: person.sourceRef,
-          sourceClass: person.sourceClass,
         },
       });
     } catch (error) {
@@ -391,7 +373,6 @@ export function createOrganizationRouter(
         positionId: pos.id,
         assignmentType: parsed.data.assignmentType,
         validFrom,
-        sourceRef: parsed.data.sourceRef,
       });
       res.status(201).json({ data: assignment });
     } catch (error) {

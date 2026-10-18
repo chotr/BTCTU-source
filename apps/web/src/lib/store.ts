@@ -46,7 +46,7 @@ export interface SyncRun {
   retryOf?: string;
 }
 export interface IntegrationState {
-  mappings: { field: string; target: string; source: string }[];
+  mappings: { field: string; target: string }[];
   runs: SyncRun[];
   checkpoint: string;
 }
@@ -94,17 +94,14 @@ export function initialDemoState(): AppState {
         {
           field: "person.id",
           target: "personnelCode",
-          source: "QĐ607",
         },
         {
           field: "person.name",
           target: "fullName",
-          source: "QĐ308",
         },
         {
           field: "department.code",
           target: "organizationCode",
-          source: "QĐ308",
         },
       ],
       runs: [],

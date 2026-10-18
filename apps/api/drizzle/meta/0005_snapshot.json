@@ -392,12 +392,6 @@
           "primaryKey": false,
           "notNull": false
         },
-        "source_ref": {
-          "name": "source_ref",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false
-        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp with time zone",
@@ -459,18 +453,6 @@
         "valid_to": {
           "name": "valid_to",
           "type": "date",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "source_ref": {
-          "name": "source_ref",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "source_class": {
-          "name": "source_class",
-          "type": "varchar(32)",
           "primaryKey": false,
           "notNull": false
         },

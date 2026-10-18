@@ -42,7 +42,6 @@ export type CatalogItem = {
   standardScore: number;
   coefficient: number;
   durationDays: number;
-  sourceRef: string;
 };
 
 export type TaskResult = {

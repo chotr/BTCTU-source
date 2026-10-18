@@ -70,7 +70,6 @@ export interface Task {
     | "standardScore"
     | "coefficient"
     | "durationDays"
-    | "sourceRef"
   >;
   assignmentSnapshot?: {
     assigneeName: string;

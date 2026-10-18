@@ -6,7 +6,6 @@ import { api } from "@/lib/api";
 import { Button, Card, Field, Select } from "@/components/ui";
 import type { Evaluation } from "@/lib/types";
 
-/** Thẻ "Điều kiện xếp loại": danh mục điều kiện bắt buộc và hạn mức. */
 export function ConditionsCard({
   ev,
   canCalc,
@@ -29,8 +28,8 @@ export function ConditionsCard({
     <Card className="p-5">
       <h2 className="text-sm font-semibold">Điều kiện xếp loại</h2>
       <p className="mt-2 text-xs leading-relaxed text-ink-3">
-        QĐ39 Điều 11: dải 90 / 70 / 50 không đủ để tự xếp loại. Checklist bên
-        dưới là các điều kiện tiêu chuẩn áp dụng cho từng nhóm đối tượng.
+        Dải 90 / 70 / 50 không đủ để tự xếp loại. Checklist bên dưới áp dụng
+        theo từng nhóm đối tượng.
       </p>
       <div className="mt-4 space-y-4">
         {checks.map((c) => (

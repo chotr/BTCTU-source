@@ -1,6 +1,5 @@
 import type { Classification, ConditionCheck, Evaluation } from "@/lib/types";
 
-/** Dải điểm theo kiểu QĐ39. Chỉ riêng dải điểm không bao giờ quyết định xếp loại. */
 export const scoreBand = (score: number): Classification =>
   score >= 90
     ? "XUAT_SAC"
@@ -17,7 +16,6 @@ const RANK: Record<Classification, number> = {
   XUAT_SAC: 3,
 };
 
-/** Trả về các vấn đề chặn mức xếp loại đề xuất; rỗng = đủ điều kiện. */
 export function classificationEligibility(
   score: number,
   conditions: ConditionCheck[],

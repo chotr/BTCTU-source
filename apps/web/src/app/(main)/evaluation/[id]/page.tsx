@@ -98,7 +98,7 @@ function Workspace({ ev }: { ev: Evaluation }) {
         tone={locked ? "neutral" : "accent"}
       >
         Áp dụng khung đánh giá 30/70 và tiêu chuẩn nhóm chức danh theo hướng dẫn
-        05-HD/TU. Điểm số các trục được tổng hợp tự động từ kết quả thực hiện
+        Điểm số các trục được tổng hợp tự động từ kết quả thực hiện
         nhiệm vụ trong kỳ.
       </Callout>
       <div

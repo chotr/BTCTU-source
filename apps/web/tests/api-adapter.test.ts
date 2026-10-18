@@ -6,7 +6,7 @@ import {
   mapApiPeriod,
   mapApiTask,
 } from "@/lib/api-adapter";
-import { qualityToApi } from "@/lib/api-mode/mappers";
+import { mapApiPerson, qualityToApi } from "@/lib/api-mode/mappers";
 
 describe("API adapter", () => {
   it("keeps all four business quality levels distinct", () => {
@@ -51,6 +51,25 @@ describe("API adapter", () => {
       range: "Quý III/2026",
       status: "ACTIVE",
       lockedAt: null,
+    });
+  });
+
+  it("keeps a secondment relationship in the API workspace", () => {
+    expect(
+      mapApiPerson({
+        id: "person-uuid",
+        name: "Nguyễn Văn A",
+        title: "Chuyên viên",
+        role: "cong_chuc",
+        departmentId: "dept-1",
+        positionRefId: "position-1",
+        assignmentType: "SECONDMENT",
+        sourceRef: null,
+        sourceClass: "UNVERIFIED",
+      }),
+    ).toMatchObject({
+      id: "person-uuid",
+      assignmentType: "SECONDMENT",
     });
   });
 

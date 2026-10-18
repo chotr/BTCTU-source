@@ -82,12 +82,14 @@ class MemoryOrganizationStore implements OrganizationStore {
       id: "pos-1",
       title: "Trưởng ban",
       externalId: "truong-ban",
+      businessRole: "lanh_dao",
       createdAt: new Date(),
     },
     {
       id: "pos-2",
       title: "Trưởng phòng",
       externalId: "truong-phong",
+      businessRole: "truong_phong",
       createdAt: new Date(),
     },
   ];
@@ -160,11 +162,7 @@ class MemoryOrganizationStore implements OrganizationStore {
           departmentId: dept.id,
           departmentName: dept.name,
           departmentCode: dept.officialCode,
-          role: position.title.includes("Trưởng ban")
-            ? ("lanh_dao" as const)
-            : position.title.includes("Trưởng phòng")
-              ? ("truong_phong" as const)
-              : ("cong_chuc" as const),
+          role: position.businessRole,
           assignmentType: a.assignmentType,
           validFrom: a.validFrom,
           validTo: a.validTo,
@@ -184,7 +182,7 @@ class MemoryOrganizationStore implements OrganizationStore {
   }
 
   async findPersonById(id: string): Promise<Person | null> {
-    return this.people.find((p) => p.id === id || p.externalId === id) ?? null;
+    return this.people.find((p) => p.id === id) ?? null;
   }
 
   async listAssignmentsByPerson(
@@ -207,11 +205,7 @@ class MemoryOrganizationStore implements OrganizationStore {
           departmentId: dept.id,
           departmentName: dept.name,
           departmentCode: dept.officialCode,
-          role: position.title.includes("Trưởng ban")
-            ? ("lanh_dao" as const)
-            : position.title.includes("Trưởng phòng")
-              ? ("truong_phong" as const)
-              : ("cong_chuc" as const),
+          role: position.businessRole,
           assignmentType: a.assignmentType,
           validFrom: a.validFrom,
           validTo: a.validTo,
@@ -276,7 +270,7 @@ class MemoryOrganizationStore implements OrganizationStore {
     data: { name?: string; externalId?: string; sourceRef?: string },
   ): Promise<Person | null> {
     const index = this.people.findIndex(
-      (p) => p.id === id || p.externalId === id,
+      (p) => p.id === id,
     );
     if (index === -1) return null;
     this.people[index] = {
@@ -380,7 +374,7 @@ describe("organization HTTP routes", () => {
     });
     expect(res.body.data.people).toHaveLength(2);
     expect(res.body.data.people[0]).toMatchObject({
-      id: "p-nguyen-thuong-hai",
+      id: "person-1",
       name: "Nguyễn Thượng Hải",
       title: "Trưởng ban",
       role: "lanh_dao",
@@ -414,7 +408,7 @@ describe("organization HTTP routes", () => {
     });
     expect(res.body.data.members).toHaveLength(1);
     expect(res.body.data.members[0]).toMatchObject({
-      id: "p-tran-hai-trieu",
+      id: "person-2",
       name: "Trần Hải Triều",
       title: "Trưởng phòng",
       role: "truong_phong",
@@ -442,6 +436,35 @@ describe("organization HTTP routes", () => {
     expect(res.body.type).toContain("department_not_found");
   });
 
+  it("uses the assigned business role instead of interpreting the position title", async () => {
+    const store = new MemoryOrganizationStore();
+    store.positions[0] = {
+      ...store.positions[0],
+      title: "Nguyên Trưởng ban",
+      businessRole: "cong_chuc",
+    };
+    const app = createApp(testEnv, {
+      auth: authMock("lanh_dao"),
+      organizationStore: store,
+      actorResolver: () => ({
+        id: "person-1",
+        name: "Lãnh đạo",
+        role: "lanh_dao",
+        departmentId: "dept-0",
+      }),
+    });
+
+    const res = await request(app)
+      .get("/api/v1/organizations")
+      .set("Cookie", "btctu_access=valid-token");
+
+    expect(res.status).toBe(200);
+    expect(res.body.data.people[0]).toMatchObject({
+      title: "Nguyên Trưởng ban",
+      role: "cong_chuc",
+    });
+  });
+
   it("GET /api/v1/people/:personId returns person profile and current assignment", async () => {
     const store = new MemoryOrganizationStore();
     const app = createApp(testEnv, {
@@ -456,7 +479,7 @@ describe("organization HTTP routes", () => {
     });
 
     const res = await request(app)
-      .get("/api/v1/people/p-tran-hai-trieu")
+      .get("/api/v1/people/person-2")
       .set("Cookie", "btctu_access=valid-token");
 
     expect(res.status).toBe(200);
@@ -548,5 +571,53 @@ describe("organization HTTP routes", () => {
       departmentName: "Phòng Tổng hợp mới",
       positionTitle: "Trưởng phòng",
     });
+  });
+
+  it("does not allow changing an external integration ID through the people API", async () => {
+    const store = new MemoryOrganizationStore();
+    const app = createApp(testEnv, {
+      auth: authMock("lanh_dao"),
+      organizationStore: store,
+      actorResolver: () => ({
+        id: "person-1",
+        name: "Lãnh đạo",
+        role: "lanh_dao",
+        departmentId: "dept-0",
+      }),
+    });
+
+    const res = await request(app)
+      .patch("/api/v1/people/person-1")
+      .set("Cookie", "btctu_access=valid-token")
+      .send({ externalId: "another-external-id" });
+
+    expect(res.status).toBe(422);
+    expect(store.people[0].externalId).toBe("p-nguyen-thuong-hai");
+  });
+
+  it("does not accept backdated assignments through the operational API", async () => {
+    const store = new MemoryOrganizationStore();
+    const app = createApp(testEnv, {
+      auth: authMock("lanh_dao"),
+      organizationStore: store,
+      actorResolver: () => ({
+        id: "person-1",
+        name: "Lãnh đạo",
+        role: "lanh_dao",
+        departmentId: "dept-0",
+      }),
+    });
+
+    const res = await request(app)
+      .post("/api/v1/assignments")
+      .set("Cookie", "btctu_access=valid-token")
+      .send({
+        personId: "person-2",
+        departmentId: "dept-0",
+        positionId: "pos-1",
+        validFrom: "2026-01-01",
+      });
+
+    expect(res.status).toBe(422);
   });
 });

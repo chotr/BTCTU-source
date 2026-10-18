@@ -55,22 +55,19 @@ export function SettingsPanel() {
               {state.storageError
                 ? "Lưu trữ cần kiểm tra"
                 : apiMode
-                  ? "Dữ liệu từ API"
+                  ? "Dữ liệu"
                   : "Lưu cục bộ · schema v3"}
             </Badge>
             <Badge>{state.tasks.length} nhiệm vụ</Badge>
-            <Badge tone={apiMode ? "ok" : "warn"}>
-              {environmentLabel()} · {apiMode ? "API dịch vụ" : "Dữ liệu mô phỏng"}
-            </Badge>
           </div>
           <p className="my-4 text-xs leading-relaxed text-ink-3">
             {apiMode
-              ? "Tải lại để lấy bản dữ liệu mới nhất từ API."
-              : "Đổi tài khoản vẫn giữ dữ liệu. Khôi phục sẽ thay dữ liệu cục bộ bằng bộ mẫu."}
+              ? "Tải lại để lấy bản dữ liệu mới nhất."
+              : "Đổi tài khoản vẫn giữ dữ liệu. Khôi phục sẽ thay dữ liệu."}
           </p>
           <Button onClick={() => setOpen(true)}>
             {apiMode
-              ? "Tải lại từ API"
+              ? "Tải lại"
               : "Khôi phục không gian làm việc"}
           </Button>
         </Card>

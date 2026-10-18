@@ -1,5 +1,5 @@
-import { and, asc, desc, eq, gt, isNull, lte, or } from "drizzle-orm";
-import { ROLES, type Role } from "@btctu/shared";
+import { and, asc, desc, eq, gt, isNull, lte, or, sql } from "drizzle-orm";
+import type { Role } from "@btctu/shared";
 import {
   departments,
   people,
@@ -17,22 +17,6 @@ const UUID_REGEX =
 
 export function isUuid(value: string): boolean {
   return UUID_REGEX.test(value);
-}
-
-export function deriveRoleFromPosition(title: string): Role {
-  const lower = title.toLowerCase();
-  if (lower.includes("trưởng ban") || lower.includes("lãnh đạo ban")) {
-    return ROLES.lanhDao;
-  }
-  if (
-    lower.includes("trưởng phòng") ||
-    lower.includes("chánh văn phòng") ||
-    lower.includes("phó trưởng phòng") ||
-    lower.includes("phó chánh văn phòng")
-  ) {
-    return ROLES.truongPhong;
-  }
-  return ROLES.congChuc;
 }
 
 export type OrganizationAssignment = {
@@ -88,7 +72,7 @@ export interface OrganizationStore {
   }): Promise<Person>;
   updatePerson(
     id: string,
-    data: { name?: string; externalId?: string; sourceRef?: string },
+    data: { name?: string; sourceRef?: string },
   ): Promise<Person | null>;
   findPositionById(id: string): Promise<Position | null>;
   replaceAssignment(data: {
@@ -134,6 +118,7 @@ export class DatabaseOrganizationStore implements OrganizationStore {
         externalId: people.externalId,
         positionId: positions.id,
         positionTitle: positions.title,
+        role: positions.businessRole,
         departmentId: departments.id,
         departmentName: departments.name,
         departmentCode: departments.officialCode,
@@ -164,10 +149,7 @@ export class DatabaseOrganizationStore implements OrganizationStore {
       )
       .orderBy(asc(people.name));
 
-    return rows.map((row) => ({
-      ...row,
-      role: deriveRoleFromPosition(row.positionTitle),
-    }));
+    return rows;
   }
 
   async listAssignmentsByDepartment(
@@ -185,6 +167,7 @@ export class DatabaseOrganizationStore implements OrganizationStore {
         externalId: people.externalId,
         positionId: positions.id,
         positionTitle: positions.title,
+        role: positions.businessRole,
         departmentId: departments.id,
         departmentName: departments.name,
         departmentCode: departments.officialCode,
@@ -218,21 +201,15 @@ export class DatabaseOrganizationStore implements OrganizationStore {
       )
       .orderBy(asc(people.name));
 
-    return rows.map((row) => ({
-      ...row,
-      role: deriveRoleFromPosition(row.positionTitle),
-    }));
+    return rows;
   }
 
   async findPersonById(id: string): Promise<Person | null> {
-    const conditions = [eq(people.externalId, id)];
-    if (isUuid(id)) {
-      conditions.unshift(eq(people.id, id));
-    }
+    if (!isUuid(id)) return null;
     const rows = await this.db
       .select()
       .from(people)
-      .where(or(...conditions))
+      .where(eq(people.id, id))
       .limit(1);
     return rows[0] ?? null;
   }
@@ -251,6 +228,7 @@ export class DatabaseOrganizationStore implements OrganizationStore {
         externalId: people.externalId,
         positionId: positions.id,
         positionTitle: positions.title,
+        role: positions.businessRole,
         departmentId: departments.id,
         departmentName: departments.name,
         departmentCode: departments.officialCode,
@@ -270,10 +248,7 @@ export class DatabaseOrganizationStore implements OrganizationStore {
       .where(eq(positionAssignments.personId, p.id))
       .orderBy(desc(positionAssignments.createdAt));
 
-    return rows.map((row) => ({
-      ...row,
-      role: deriveRoleFromPosition(row.positionTitle),
-    }));
+    return rows;
   }
 
   async createDepartment(data: {
@@ -310,7 +285,7 @@ export class DatabaseOrganizationStore implements OrganizationStore {
 
   async updatePerson(
     id: string,
-    data: { name?: string; externalId?: string; sourceRef?: string },
+    data: { name?: string; sourceRef?: string },
   ): Promise<Person | null> {
     const target = await this.findPersonById(id);
     if (!target) return null;
@@ -344,20 +319,16 @@ export class DatabaseOrganizationStore implements OrganizationStore {
     sourceRef?: string;
   }): Promise<PositionAssignment> {
     return this.db.transaction(async (tx) => {
+      await tx.execute(
+        sql`select pg_advisory_xact_lock(hashtext(${data.personId}))`,
+      );
       await tx
         .update(positionAssignments)
         .set({ validTo: data.validFrom })
         .where(
           and(
             eq(positionAssignments.personId, data.personId),
-            or(
-              isNull(positionAssignments.validFrom),
-              lte(positionAssignments.validFrom, data.validFrom),
-            ),
-            or(
-              isNull(positionAssignments.validTo),
-              gt(positionAssignments.validTo, data.validFrom),
-            ),
+            isNull(positionAssignments.validTo),
           ),
         );
 

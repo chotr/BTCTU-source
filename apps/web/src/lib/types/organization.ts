@@ -36,6 +36,7 @@ export interface Person {
   role?: Role;
   departmentId: string;
   positionRefId: string;
+  assignmentType?: "STAFF" | "SECONDMENT";
   sourceRef?: string | null;
   sourceClass?: string;
 }

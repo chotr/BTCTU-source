@@ -12,7 +12,7 @@ thức.
 | Phần việc     | Đã có                                                               | Chưa hoàn tất                                                                      |
 | ------------- | ------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
 | Giao diện     | Đọc dữ liệu và gọi các thao tác đã có API                           | Một số màn hình chưa có endpoint tương ứng                                         |
-| API           | Express, OpenAPI, kiểm tra dữ liệu đầu vào, đăng nhập và phân quyền | Nhiều tuyến nghiệp vụ vẫn dùng dữ liệu tạo lại theo từng yêu cầu                   |
+| API           | Express, OpenAPI, kiểm tra dữ liệu đầu vào, đăng nhập và phân quyền | Nhiều route nghiệp vụ vẫn dùng dữ liệu tạo lại theo từng yêu cầu                   |
 | Cơ sở dữ liệu | Lược đồ tổ chức, người dùng, phiên đăng nhập và nhật ký             | Chưa thay toàn bộ dữ liệu tạm bằng kho dữ liệu thật                                |
 | Kiểm thử      | Kiểm thử đơn vị, kiểm thử API và một số kịch bản trình duyệt        | Chưa có kiểm thử xuyên suốt với web, API và PostgreSQL thật                        |
 | Vận hành      | Có mẫu cấu hình cho môi trường phát triển                           | Chưa hoàn tất tích hợp định danh, sao lưu, giám sát và thẩm định an toàn thông tin |

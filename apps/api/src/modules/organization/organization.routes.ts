@@ -61,7 +61,7 @@ export function createOrganizationRouter(
       }));
 
       const people = assignments.map((a) => ({
-        id: a.externalId ?? a.personId,
+        id: a.personId,
         personId: a.personId,
         name: a.personName,
         title: a.positionTitle,
@@ -113,7 +113,7 @@ export function createOrganizationRouter(
           sourceRef: dept.sourceRef,
           sourceClass: dept.sourceClass,
           members: members.map((m) => ({
-            id: m.externalId ?? m.personId,
+            id: m.personId,
             personId: m.personId,
             name: m.personName,
             title: m.positionTitle,
@@ -384,8 +384,7 @@ export function createOrganizationRouter(
         );
         return;
       }
-      const validFrom =
-        parsed.data.validFrom ?? new Date().toISOString().slice(0, 10);
+      const validFrom = new Date().toISOString().slice(0, 10);
       const assignment = await store.replaceAssignment({
         personId: person.id,
         departmentId: dept.id,

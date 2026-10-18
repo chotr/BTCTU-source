@@ -12,7 +12,7 @@ function toDirectoryPerson(
   assignment: OrganizationAssignment,
 ): DirectoryPerson {
   return {
-    id: assignment.externalId ?? assignment.personId,
+    id: assignment.personId,
     name: assignment.personName,
     title: assignment.positionTitle,
     role: assignment.role,

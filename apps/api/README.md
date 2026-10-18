@@ -1,8 +1,8 @@
 # BTCTU API
 
-API Express.js cung cấp các tuyến cho nhiệm vụ, đánh giá, kỳ, nhật ký và báo cáo.
+API Express.js cung cấp các route cho nhiệm vụ, đánh giá, kỳ, nhật ký và báo cáo.
 
-Phần đăng nhập đã lưu người dùng và phiên trong PostgreSQL. Các tuyến nghiệp vụ
+Phần đăng nhập đã lưu người dùng và phiên trong PostgreSQL. Các route nghiệp vụ
 khác hiện chia sẻ dữ liệu bộ nhớ (WorkspaceState) trong cùng phiên bản ứng dụng,
 nhưng chưa được lưu bền vững vào cơ sở dữ liệu khi khởi động lại server.
 

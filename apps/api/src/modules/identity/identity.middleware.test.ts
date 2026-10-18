@@ -3,8 +3,7 @@ import request from "supertest";
 import { createApp } from "@/app";
 import type { Env } from "@/env";
 import type { AuthPort } from "@/modules/auth/auth.types";
-import { createStateDirectory } from "@/modules/identity/directory";
-import { createWorkspaceState } from "@/mock-state";
+import type { DirectoryPort } from "@/modules/identity/directory";
 import { ACCESS_COOKIE_NAME } from "@/security/cookie";
 
 const productionEnv: Env = {
@@ -53,11 +52,25 @@ function authWithDirectoryActor(directoryActorId: string): AuthPort {
   };
 }
 
+const directory: DirectoryPort = {
+  findById: async (id) =>
+    id === "eab5623e-a139-5f47-b510-b24d52491ace"
+      ? {
+          id,
+          name: "Nguyễn Trần Thi",
+          title: "Phó Trưởng phòng",
+          role: "truong_phong",
+          departmentId: "department-1",
+        }
+      : null,
+  list: async () => [],
+};
+
 describe("production actor identity", () => {
-  it("resolves an authenticated account through its directory actor id", async () => {
+  it("resolves an authenticated account through its directory UUID", async () => {
     const app = createApp(productionEnv, {
-      auth: authWithDirectoryActor("p-nguyen-tran-thi"),
-      directory: createStateDirectory(createWorkspaceState().people),
+      auth: authWithDirectoryActor("eab5623e-a139-5f47-b510-b24d52491ace"),
+      directory,
     });
 
     const response = await request(app)
@@ -66,7 +79,7 @@ describe("production actor identity", () => {
 
     expect(response.status).toBe(200);
     expect(response.body.data).toMatchObject({
-      id: "p-nguyen-tran-thi",
+      id: "eab5623e-a139-5f47-b510-b24d52491ace",
       role: "truong_phong",
     });
   });
@@ -97,7 +110,7 @@ describe("production actor identity", () => {
 
     const app = createApp(productionEnv, {
       auth: rootAuth,
-      directory: createStateDirectory(createWorkspaceState().people),
+      directory,
     });
     const response = await request(app)
       .get("/api/v1/me")

@@ -66,6 +66,7 @@ export default function OrganizationPage() {
             departmentId: user?.departmentId ?? departments[0]?.id ?? "",
             headId: "",
             positionRefId: state.positions[0]?.id ?? "",
+            assignmentType: "STAFF",
           },
     );
   }

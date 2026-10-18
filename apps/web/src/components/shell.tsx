@@ -161,12 +161,6 @@ export default function Shell({ children }: { children: ReactNode }) {
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-60 flex-col bg-surface shadow-card lg:flex print:hidden">
         <Brand />
         <Navigation />
-        <p className="px-5 pb-4 text-[11px] leading-relaxed text-ink-3">
-          {environmentLabel()} ·{" "}
-          {isApiWorkspace() ? "API dịch vụ" : "Dữ liệu mô phỏng"}
-          <br />
-          Phiên bản 1.0
-        </p>
       </aside>
       <div className="min-w-0 lg:pl-60 print:pl-0">
         <header className="sticky top-0 z-20 flex min-h-16 items-center justify-between gap-3 bg-surface px-4 shadow-card sm:px-6 print:hidden">

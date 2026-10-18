@@ -86,6 +86,18 @@ export function MasterDataModal({
                     </option>
                   ))}
                 </Select>
+              ) : key === "assignmentType" ? (
+                <Select
+                  required
+                  className="w-full"
+                  value={form?.[key] ?? "STAFF"}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f!, [key]: e.target.value }))
+                  }
+                >
+                  <option value="STAFF">Nhân sự thuộc biên chế</option>
+                  <option value="SECONDMENT">Biệt phái</option>
+                </Select>
               ) : key === "headId" ? (
                 <Select
                   className="w-full"

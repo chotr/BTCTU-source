@@ -28,6 +28,7 @@ export const ORG_TAB_FIELDS: Record<OrgTab, [string, string][]> = {
     ["title", "Chức danh"],
     ["departmentId", "Đơn vị"],
     ["positionRefId", "Vị trí việc làm"],
+    ["assignmentType", "Loại quan hệ"],
   ],
   positions: [
     ["title", "Tên vị trí"],

@@ -80,7 +80,8 @@ export const organizationActions = {
             personId,
             departmentId: input.departmentId,
             positionId: input.positionRefId,
-            assignmentType: "STAFF",
+            assignmentType:
+              input.assignmentType ?? current?.assignmentType ?? "STAFF",
           }),
         });
       }

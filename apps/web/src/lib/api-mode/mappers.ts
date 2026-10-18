@@ -96,6 +96,7 @@ export function mapApiPerson(item: ApiPerson): Person {
     role: item.role,
     departmentId: item.departmentId,
     positionRefId: item.positionRefId,
+    assignmentType: item.assignmentType,
     sourceRef: item.sourceRef,
     sourceClass: item.sourceClass,
   };

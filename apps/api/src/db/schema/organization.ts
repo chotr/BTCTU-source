@@ -4,9 +4,11 @@ import {
   pgEnum,
   pgTable,
   timestamp,
+  uniqueIndex,
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 
 // Loại quan hệ nhân sự trong cơ cấu. Cán bộ công an biệt phái là một quan hệ được
 // biệt phái vào đơn vị/vị trí trong một khoảng thời gian, nên nó thuộc về dòng
@@ -15,6 +17,12 @@ import {
 export const assignmentTypeEnum = pgEnum("assignment_type", [
   "STAFF",
   "SECONDMENT",
+]);
+
+export const businessRoleEnum = pgEnum("business_role", [
+  "lanh_dao",
+  "truong_phong",
+  "cong_chuc",
 ]);
 
 // Bốn đơn vị của Ban Tổ chức Tỉnh ủy (QĐ01 Điều 2–6). Tên là trường duy nhất
@@ -60,7 +68,11 @@ export const people = pgTable("people", {
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
-});
+}, (table) => [
+  uniqueIndex("people_external_id_unique")
+    .on(table.externalId)
+    .where(sql`${table.externalId} is not null`),
+]);
 
 // Chức danh. QĐ01 chỉ xác nhận cơ cấu thành phần, không có danh mục vị trí việc
 // làm đầy đủ, nên bảng này giữ những chức danh nguồn thực sự nêu.
@@ -71,6 +83,10 @@ export const positions = pgTable("positions", {
 
   // Mã vị trí từ hệ thống chủ quản, khi hệ thống đó được xác định.
   externalId: varchar("external_id", { length: 255 }),
+
+  businessRole: businessRoleEnum("business_role")
+    .notNull()
+    .default("cong_chuc"),
 
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()

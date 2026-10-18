@@ -27,6 +27,10 @@ import {
 import { createActorMiddleware } from "@/modules/identity/identity.middleware";
 import { createIdentityRouter } from "@/modules/identity/identity.routes";
 import { createOrganizationRouter } from "@/modules/organization/organization.routes";
+import {
+  DatabaseOrganizationStore,
+  type OrganizationStore,
+} from "@/modules/organization/organization.repository";
 import { createReportingRouter } from "@/modules/reporting/reporting.routes";
 import { createTaskRouter } from "@/modules/task/task.routes";
 import { createWorkspaceState } from "@/mock-state";
@@ -36,20 +40,21 @@ import type { WorkspaceState } from "@/types";
 export type AppDependencies = AuthModuleOverrides & {
   actorResolver?: ActorResolver;
   accountAdmin?: AccountAdminPort;
+  organizationStore?: OrganizationStore;
   state?: WorkspaceState;
 };
 
 export function createApp(env: Env, dependencies: AppDependencies = {}) {
   const { auth, throttle } = createAuthModule(env, dependencies);
   const state = dependencies.state ?? createWorkspaceState();
+  const db = createDatabase(env.databaseUrl);
   const actorResolver =
     dependencies.actorResolver ?? createDirectoryActorResolver(state.people);
   const accountAdmin =
     dependencies.accountAdmin ??
-    new AccountAdminService(
-      new DatabaseAccountAdminStore(createDatabase(env.databaseUrl)),
-      new PasswordService(),
-    );
+    new AccountAdminService(new DatabaseAccountAdminStore(db), new PasswordService());
+  const organizationStore =
+    dependencies.organizationStore ?? new DatabaseOrganizationStore(db);
 
   const app = express();
   app.disable("x-powered-by");
@@ -95,7 +100,7 @@ export function createApp(env: Env, dependencies: AppDependencies = {}) {
 
   api.use(createActorMiddleware({ env, auth, actorResolver, state }));
   api.use(createIdentityRouter(env));
-  api.use(createOrganizationRouter());
+  api.use(createOrganizationRouter({ store: organizationStore }));
   api.use(createCatalogRouter());
   api.use(createTaskRouter());
   api.use(createEvaluationRouter());

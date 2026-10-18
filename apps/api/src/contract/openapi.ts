@@ -91,7 +91,48 @@ export const openapi = {
       get: { responses: { "200": { description: "Current actor" } } },
     },
     "/api/v1/organizations": {
-      get: { responses: { "200": { description: "Departments and people" } } },
+      get: { responses: { "200": { description: "Departments and current members from database" } } },
+    },
+    "/api/v1/organizations/{departmentId}": {
+      get: {
+        responses: {
+          "200": { description: "Department detail with members and positions" },
+          "404": { description: "Department not found" },
+        },
+      },
+    },
+    "/api/v1/people/{personId}": {
+      get: {
+        responses: {
+          "200": { description: "Person profile, current assignment, and history" },
+          "404": { description: "Person not found" },
+        },
+      },
+    },
+    "/api/v1/departments": {
+      post: { responses: { "201": { description: "Department created" } } },
+    },
+    "/api/v1/departments/{id}": {
+      patch: {
+        responses: {
+          "200": { description: "Department updated" },
+          "404": { description: "Department not found" },
+        },
+      },
+    },
+    "/api/v1/people": {
+      post: { responses: { "201": { description: "Person created" } } },
+    },
+    "/api/v1/people/{id}": {
+      patch: {
+        responses: {
+          "200": { description: "Person updated" },
+          "404": { description: "Person not found" },
+        },
+      },
+    },
+    "/api/v1/assignments": {
+      post: { responses: { "201": { description: "Position assigned/reassigned" } } },
     },
     "/api/v1/catalog": {
       get: { responses: { "200": { description: "Versioned work catalog" } } },

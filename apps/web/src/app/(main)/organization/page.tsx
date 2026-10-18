@@ -39,8 +39,7 @@ export default function OrganizationPage() {
     canViewDepartment(user, d.id),
   );
   const allowed =
-    !isApiWorkspace() &&
-    (tab === "people" ? canAssign(user) : canManage(user));
+    tab === "people" ? canAssign(user) : canManage(user);
   const items = state[tab].filter((item) => {
     const r = item as unknown as Record<string, string>;
     const id = tab === "departments" ? r.id : r.departmentId;
@@ -67,19 +66,19 @@ export default function OrganizationPage() {
           },
     );
   }
-  function save(e: React.FormEvent) {
+  async function save(e: React.FormEvent) {
     e.preventDefault();
     if (!form) return;
     try {
       const id = form.id;
       if (remove) {
-        if (tab === "departments") api.removeDepartment(id, reason);
-        if (tab === "people") api.removePerson(id, reason);
-        if (tab === "positions") api.removePosition(id);
-        if (tab === "responsibilities") api.removeResponsibility(id);
+        if (tab === "departments") await api.removeDepartment(id, reason);
+        if (tab === "people") await api.removePerson(id, reason);
+        if (tab === "positions") await api.removePosition(id);
+        if (tab === "responsibilities") await api.removeResponsibility(id);
       } else {
         if (tab === "departments")
-          api.saveDepartment(
+          await api.saveDepartment(
             {
               id: id || undefined,
               code: form.code ?? "",
@@ -91,7 +90,7 @@ export default function OrganizationPage() {
             reason,
           );
         if (tab === "people")
-          api.savePerson(
+          await api.savePerson(
             {
               id: id || undefined,
               name: form.name ?? "",
@@ -102,13 +101,13 @@ export default function OrganizationPage() {
             reason,
           );
         if (tab === "positions")
-          api.savePosition({
+          await api.savePosition({
             id,
             title: form.title ?? "",
             scope: form.scope ?? "",
           });
         if (tab === "responsibilities")
-          api.saveResponsibility({
+          await api.saveResponsibility({
             id,
             name: form.name ?? "",
             departmentId: form.departmentId,

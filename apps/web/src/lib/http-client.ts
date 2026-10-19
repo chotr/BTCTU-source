@@ -13,6 +13,16 @@ export class ApiError extends Error {
   }
 }
 
+function getApiBaseUrl(): string {
+  if (runtimeConfig.apiBaseUrl) return runtimeConfig.apiBaseUrl;
+  throw new ApiError(
+    "Thiếu NEXT_PUBLIC_API_BASE_URL trong Build variables của frontend.",
+    500,
+    null,
+    "api_base_url_missing",
+  );
+}
+
 /** Body lỗi có thể thiếu trường, nên chỉ đọc phần có mặt. */
 type ProblemBody = Partial<ProblemResponse>;
 let refreshInFlight: Promise<boolean> | null = null;
@@ -28,26 +38,26 @@ function isApiEnvelope(value: unknown): value is ApiEnvelope<unknown> {
   if (!value || typeof value !== "object" || !("data" in value)) {
     return false;
   }
-  return !("meta" in value) ||
+  return (
+    !("meta" in value) ||
     value.meta === undefined ||
-    (typeof value.meta === "object" && value.meta !== null);
+    (typeof value.meta === "object" && value.meta !== null)
+  );
 }
 
 function refreshAccessToken(): Promise<boolean> {
   if (refreshInFlight) return refreshInFlight;
   refreshInFlight = (async () => {
+    const apiBaseUrl = getApiBaseUrl();
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 10_000);
     try {
-      const response = await fetch(
-        `${runtimeConfig.apiBaseUrl}/api/v1/auth/refresh`,
-        {
-          method: "POST",
-          headers: { accept: "application/json" },
-          credentials: "include",
-          signal: controller.signal,
-        },
-      );
+      const response = await fetch(`${apiBaseUrl}/api/v1/auth/refresh`, {
+        method: "POST",
+        headers: { accept: "application/json" },
+        credentials: "include",
+        signal: controller.signal,
+      });
       return response.ok;
     } catch {
       return false;
@@ -72,13 +82,14 @@ async function executeRequest<T>(
   init: RequestInit = {},
   allowRetry = true,
 ): Promise<ApiEnvelope<T>> {
+  const apiBaseUrl = getApiBaseUrl();
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 15_000);
   const headers = new Headers(init.headers);
   headers.set("accept", "application/json");
   if (init.body) headers.set("content-type", "application/json");
   try {
-    const response = await fetch(`${runtimeConfig.apiBaseUrl}${path}`, {
+    const response = await fetch(`${apiBaseUrl}${path}`, {
       ...init,
       headers,
       credentials: "include",
@@ -116,10 +127,18 @@ async function executeRequest<T>(
     }
 
     const body: unknown = await response.json().catch(() => {
-      throw new ApiError("API trả về JSON không hợp lệ", response.status, requestId);
+      throw new ApiError(
+        "API trả về JSON không hợp lệ",
+        response.status,
+        requestId,
+      );
     });
     if (!isApiEnvelope(body)) {
-      throw new ApiError("API trả về envelope không hợp lệ", response.status, requestId);
+      throw new ApiError(
+        "API trả về envelope không hợp lệ",
+        response.status,
+        requestId,
+      );
     }
     return body as ApiEnvelope<T>;
   } catch (error) {

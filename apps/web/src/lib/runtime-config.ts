@@ -5,11 +5,22 @@ function appEnvironment(value: string | undefined): AppEnvironment {
   return "development";
 }
 
+const productionBuild = process.env.NODE_ENV === "production";
+const configuredApiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(
+  /\/+$/,
+  "",
+);
+
 export const runtimeConfig = Object.freeze({
+  // Localhost is useful only while developing locally. A production build must
+  // receive NEXT_PUBLIC_API_BASE_URL at build time from the deployment platform.
   apiBaseUrl:
-    process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/+$/, "") ??
-    "http://localhost:8787",
-  environment: appEnvironment(process.env.NEXT_PUBLIC_APP_ENV),
+    configuredApiBaseUrl ??
+    (productionBuild ? undefined : "http://localhost:8787"),
+  environment: appEnvironment(
+    process.env.NEXT_PUBLIC_APP_ENV ??
+      (productionBuild ? "production" : undefined),
+  ),
 });
 
 export function environmentLabel(): string {

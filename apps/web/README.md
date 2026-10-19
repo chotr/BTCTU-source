@@ -62,7 +62,7 @@ Trong phần cấu hình Build, dùng:
 | Thiết lập | Giá trị |
 | --- | --- |
 | Root directory | `/` |
-| Build command | `pnpm install --frozen-lockfile` |
+| Build command | `pnpm install --frozen-lockfile && pnpm build:web` |
 | Deploy command | `pnpm deploy:web` |
 
 Tại **Build variables**, thêm:
@@ -73,9 +73,10 @@ Tại **Build variables**, thêm:
 | `NEXT_PUBLIC_APP_ENV` | `production` |
 | `ENABLE_MOCK_ROUTES` | `false` |
 
-Sau khi Worker web có URL, thêm URL đó vào `CORS_ORIGINS` trong Runtime variables
-của Worker API rồi redeploy API. `NEXT_PUBLIC_*` là biến public, không đưa
-secret vào các biến này.
+`NEXT_PUBLIC_*` phải là **Build variables** vì Next.js đưa chúng vào JavaScript
+khi chạy Build command. Runtime variables không thể thay đổi bundle đã phát
+hành. Sau khi Worker web có URL, thêm URL đó vào `CORS_ORIGINS` trong Runtime
+variables của Worker API rồi redeploy API. Không đưa secret vào `NEXT_PUBLIC_*`.
 
 ## Phần còn thiếu trước khi vận hành
 

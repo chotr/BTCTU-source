@@ -51,6 +51,32 @@ pnpm --filter @btctu/web test:e2e
 Không đặt mật khẩu hoặc khóa bí mật trong biến `NEXT_PUBLIC_*`, vì các giá trị
 này được đưa xuống trình duyệt.
 
+## Deploy frontend lên Cloudflare Workers
+
+Giao diện có các route động, vì vậy phải deploy bằng **Cloudflare Workers**
+và OpenNext, không dùng Pages static export.
+
+Tạo một Worker mới tên `btctu-web`, kết nối repo GitHub và chọn nhánh `main`.
+Trong phần cấu hình Build, dùng:
+
+| Thiết lập | Giá trị |
+| --- | --- |
+| Root directory | `/` |
+| Build command | `pnpm install --frozen-lockfile` |
+| Deploy command | `pnpm deploy:web` |
+
+Tại **Build variables**, thêm:
+
+| Tên | Giá trị |
+| --- | --- |
+| `NEXT_PUBLIC_API_BASE_URL` | URL public của Worker API, ví dụ `https://btctu-api.<tai-khoan>.workers.dev` |
+| `NEXT_PUBLIC_APP_ENV` | `production` |
+| `ENABLE_MOCK_ROUTES` | `false` |
+
+Sau khi Worker web có URL, thêm URL đó vào `CORS_ORIGINS` trong Runtime variables
+của Worker API rồi redeploy API. `NEXT_PUBLIC_*` là biến public, không đưa
+secret vào các biến này.
+
 ## Phần còn thiếu trước khi vận hành
 
 - bổ sung endpoint cho mọi thao tác trên màn hình;

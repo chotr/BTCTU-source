@@ -35,7 +35,7 @@ import {
 } from "@/components/evaluation";
 
 export default function EvaluationDetail() {
-  const { id } = useParams<{ id: string }>();
+  const id = useParams<{ id: string }>()?.id;
   const state = useApp();
   const ev = state.evaluations.find((e) => e.id === id);
   if (!ev || !canViewEvaluation(state.user, ev))

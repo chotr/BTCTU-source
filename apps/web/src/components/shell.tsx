@@ -56,7 +56,7 @@ const groups = [
   },
 ];
 function Navigation({ onNavigate }: { onNavigate?: () => void }) {
-  const pathname = usePathname();
+  const pathname = usePathname() ?? "";
   const state = useApp();
   const { user, account } = state;
   const canManageAccounts =
@@ -138,7 +138,7 @@ function Brand() {
 export default function Shell({ children }: { children: ReactNode }) {
   const state = useApp();
   const { user, account, toasts, storageError } = state;
-  const pathname = usePathname();
+  const pathname = usePathname() ?? "";
   const router = useRouter();
   const [menu, setMenu] = useState(false);
   const title =

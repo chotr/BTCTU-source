@@ -28,7 +28,7 @@ function initializeOnce(mode: WorkspaceMode): Promise<void> {
 }
 
 export function StoreProvider({ children }: { children: ReactNode }) {
-  const pathname = usePathname();
+  const pathname = usePathname() ?? "";
   const mode: WorkspaceMode = pathname.startsWith("/demo") ? "mock" : "api";
   const [error, setError] = useState<string | null>(null);
   const [readyMode, setReadyMode] = useState<WorkspaceMode | null>(null);

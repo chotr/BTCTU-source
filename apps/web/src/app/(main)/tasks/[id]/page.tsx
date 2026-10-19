@@ -35,7 +35,7 @@ import {
 type TaskAction = "return" | "accept" | "reassign" | "cancel";
 
 export default function TaskDetail() {
-  const { id } = useParams<{ id: string }>();
+  const id = useParams<{ id: string }>()?.id;
   const state = useApp();
   const task = state.tasks.find((t) => t.id === id);
   if (!task || !canViewTask(state.user, task))

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-export function proxy() {
+export function middleware() {
   const demoEnabled =
     process.env.NODE_ENV !== "production" ||
     process.env.ENABLE_MOCK_ROUTES === "true";

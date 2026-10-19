@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "start": "tsx src/index.ts",
+    "deploy": "npx wrangler deploy --config wrangler.jsonc",
+    "preview": "npx wrangler dev --config wrangler.jsonc",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "db:generate": "drizzle-kit generate",

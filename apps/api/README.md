@@ -25,10 +25,10 @@ trường vận hành.
 
 ## Deploy lên Cloudflare Workers
 
-`wrangler deploy` dùng `wrangler.jsonc` làm nguồn cấu hình và có thể ghi đè
-Runtime variables cùng tên đã nhập trên Dashboard. Vì vậy các biến không nhạy
-cảm, như `CORS_ORIGINS`, được khai báo trong `wrangler.jsonc`; không sửa riêng
-trên Dashboard. Giá trị CORS phải là origin của frontend, không có đường dẫn.
+`wrangler deploy` dùng `wrangler.jsonc` làm nguồn cấu hình. File này bật
+`keep_vars: true`, nên Runtime variables đã nhập trên Dashboard (ví dụ
+`CORS_ORIGINS`) sẽ được giữ lại sau mỗi deploy; không ghi cứng URL môi trường
+vào source. Giá trị CORS phải là origin của frontend, không có đường dẫn.
 
 Các giá trị nhạy cảm chỉ đặt tại **Runtime secrets** trên Cloudflare và không
 commit vào source: `DATABASE_URL`, `JWT_ACCESS_SECRET` (cùng các JWT secret

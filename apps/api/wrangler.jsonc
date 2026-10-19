@@ -5,6 +5,9 @@
   "compatibility_date": "2026-10-19",
   "compatibility_flags": ["nodejs_compat"],
   "workers_dev": true,
+  "vars": {
+    "CORS_ORIGINS": "https://btctu-web.minhphungbmt141999.workers.dev"
+  },
   "observability": {
     "enabled": true
   }

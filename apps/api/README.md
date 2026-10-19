@@ -23,6 +23,17 @@ Môi trường cục bộ dùng header `x-dev-user-id` (ví dụ: `p-nguyen-thuo
 để chọn người dùng thử nghiệm. Header này không phải cơ chế xác thực cho môi
 trường vận hành.
 
+## Deploy lên Cloudflare Workers
+
+`wrangler deploy` dùng `wrangler.jsonc` làm nguồn cấu hình và có thể ghi đè
+Runtime variables cùng tên đã nhập trên Dashboard. Vì vậy các biến không nhạy
+cảm, như `CORS_ORIGINS`, được khai báo trong `wrangler.jsonc`; không sửa riêng
+trên Dashboard. Giá trị CORS phải là origin của frontend, không có đường dẫn.
+
+Các giá trị nhạy cảm chỉ đặt tại **Runtime secrets** trên Cloudflare và không
+commit vào source: `DATABASE_URL`, `JWT_ACCESS_SECRET` (cùng các JWT secret
+khác nếu đã cấu hình). Secrets được giữ tách khỏi `wrangler.jsonc`.
+
 ## Đăng nhập
 
 API xác thực bằng email/mật khẩu, cấp access token (JWT) và refresh token lưu trong cookie `HttpOnly`:

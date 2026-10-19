@@ -13,7 +13,16 @@
 | Vận hành      | Có mẫu cấu hình cho môi trường phát triển                           | Chưa hoàn tất tích hợp định danh, sao lưu, giám sát và thẩm định an toàn thông tin |
 
 Giao diện chính luôn đọc dữ liệu từ API. Không gian mô phỏng dành cho phát triển
-nằm tại `/demo/login` và không dùng chung phiên hoặc dữ liệu lưu với route chính.
+nằm tại `/demo/login` (hoặc `/demo`) và không dùng chung phiên hoặc dữ liệu lưu với route chính.
+
+### Cách vào không gian mô phỏng (Demo Local)
+
+1. Khởi chạy giao diện local: `pnpm dev` (hoặc `pnpm dev:web`).
+2. Mở trình duyệt và truy cập: `http://localhost:3000/demo/login`
+3. Tại màn hình này, hệ thống hỗ trợ **đăng nhập nhanh một chạm**: chỉ cần bấm chọn một trong các hồ sơ mẫu (Lãnh đạo Ban, Trưởng phòng, Công chức...) là vào thẳng không gian làm việc mà không cần nhập mật khẩu.
+4. Toàn bộ thay đổi trong chế độ demo được lưu cục bộ trong `localStorage` của trình duyệt, không ảnh hưởng đến cơ sở dữ liệu thật.
+
+*Cấu hình biến môi trường:* Khi chạy local (`NODE_ENV=development`), không gian demo luôn được mở sẵn theo mặc định (hoặc qua cấu hình `ENABLE_MOCK_ROUTES=true` trong `apps/web/.env.local`). Ở môi trường production, Next.js mặc định khóa các route `/demo/*` (trả về 404); chỉ khi đặt biến môi trường `ENABLE_MOCK_ROUTES=true` thì các trang demo mới được phép truy cập.
 
 ## Môi trường demo / kiểm duyệt trực tuyến
 

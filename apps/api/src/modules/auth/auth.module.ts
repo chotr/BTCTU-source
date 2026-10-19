@@ -1,4 +1,4 @@
-import { createDatabase } from "@/db/client";
+import { createDatabase, type Database } from "@/db/client";
 import type { Env } from "@/env";
 import {
   MemoryLoginThrottle,
@@ -24,12 +24,13 @@ export type AuthModuleOverrides = {
 export function createAuthModule(
   env: Env,
   overrides: AuthModuleOverrides = {},
+  database?: Database,
 ): AuthModule {
   let service: AuthPort | null = null;
 
   const resolve = (): AuthPort => {
     if (!service) {
-      const db = createDatabase(env.databaseUrl);
+      const db = database ?? createDatabase(env.databaseUrl);
       service = new AuthService({
         users: new UserRepository(db),
         sessions: new SessionRepository(db),

@@ -1,6 +1,6 @@
 import express from "express";
 import { openapi } from "@/contract/openapi";
-import { createDatabase } from "@/db/client";
+import { createRequestDatabase } from "@/db/client";
 import type { Env } from "@/env";
 import { errorHandler, notFoundHandler } from "@/middleware/error-handling";
 import { createRequestContext } from "@/middleware/request-context";
@@ -51,9 +51,10 @@ export type AppDependencies = AuthModuleOverrides & {
 };
 
 export function createApp(env: Env, dependencies: AppDependencies = {}) {
-  const { auth, throttle } = createAuthModule(env, dependencies);
+  const { database: db, middleware: databaseMiddleware } =
+    createRequestDatabase(env.databaseUrl);
+  const { auth, throttle } = createAuthModule(env, dependencies, db);
   const state = dependencies.state ?? createWorkspaceState();
-  const db = createDatabase(env.databaseUrl);
   const organizationStore =
     dependencies.organizationStore ?? new DatabaseOrganizationStore(db);
   const directory =
@@ -75,6 +76,7 @@ export function createApp(env: Env, dependencies: AppDependencies = {}) {
   configureProblemTypeBase(app, env.problemTypeBase);
   app.use(express.json({ limit: env.requestBodyLimit }));
   app.use(createRequestContext({ allowedOrigins: env.corsOrigins }));
+  app.use(databaseMiddleware);
 
   app.get("/health", (_req, res) =>
     res.json({

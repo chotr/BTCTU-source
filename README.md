@@ -20,15 +20,31 @@ thức.
 Giao diện chính luôn đọc dữ liệu từ API. Không gian mô phỏng dành cho phát triển
 nằm tại `/demo/login` và không dùng chung phiên hoặc dữ liệu lưu với route chính.
 
+## Môi trường demo / kiểm duyệt trực tuyến
+
+- **Đường dẫn:** [https://btctu-web.minhphungbmt141999.workers.dev/dashboard](https://btctu-web.minhphungbmt141999.workers.dev/dashboard)
+- **Mật khẩu chung:** `dev-only-changeme`
+
+Bảng tài khoản dùng để kiểm duyệt và test nhanh:
+
+| Loại | Email | Nhân sự / vai trò |
+|---|---|---|
+| Root | `root@example.test` | Quản trị hệ thống |
+| Admin | `iam-admin@example.test` | Quản trị tài khoản |
+| Lãnh đạo | `nguyen-thuong-hai@example.test` | Nguyễn Thượng Hải — Trưởng ban |
+| Cấp dưới lãnh đạo | `tran-hai-trieu@example.test` | Trần Hải Triều — Trưởng phòng Tổ chức cán bộ |
+
 ## Setup local
 
 Yêu cầu Node.js 22, pnpm 10 và Docker Desktop. PostgreSQL được chạy trong
-Docker nên không cần cài PostgreSQL trực tiếp trên máy.
+Docker nên không cần cài PostgreSQL trực tiếp trên máy (đảm bảo Docker Desktop đang chạy).
 
-### Setup local
+*Lưu ý:* Dự án là monorepo dùng **pnpm**, các gói nội bộ liên kết qua giao thức `workspace:*`. Không dùng `npm` và không `cd` vào từng thư mục con để cài đặt riêng. Tất cả lệnh quản lý gói phải thực hiện từ thư mục gốc.
+
+### Các bước khởi chạy
 
 ```powershell
-pnpm install --frozen-lockfile
+pnpm install
 pnpm setup:local
 pnpm dev
 ```

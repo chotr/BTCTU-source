@@ -8,9 +8,16 @@ nhưng chưa được lưu bền vững vào cơ sở dữ liệu khi khởi đ�
 
 ## Chạy local
 
+Khuyến nghị chạy thiết lập tự động từ thư mục gốc của repo:
+
+```powershell
+pnpm setup:local
+pnpm dev:api
+```
+
+Nếu thiết lập thủ công, hãy đảm bảo PostgreSQL local đang chạy (cổng `5437`), sao chép `apps/api/.env.example` thành `apps/api/.env.local` và chạy:
+
 ```bash
-pnpm install --frozen-lockfile
-cp apps/api/.env.example apps/api/.env
 pnpm --filter @btctu/api dev
 ```
 

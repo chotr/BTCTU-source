@@ -5,6 +5,7 @@ node_modules/
 *.tsbuildinfo
 test-results/
 playwright-report/
+.local-db/
 
 # Environment files and local secrets must never be committed.
 **/.env

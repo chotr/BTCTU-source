@@ -20,18 +20,55 @@ thức.
 Giao diện chính luôn đọc dữ liệu từ API. Không gian mô phỏng dành cho phát triển
 nằm tại `/demo/login` và không dùng chung phiên hoặc dữ liệu lưu với route chính.
 
-## Chạy trên máy phát triển
+## Setup local
 
-Yêu cầu Node.js 22, pnpm 10 và PostgreSQL nếu chạy phần đăng nhập có lưu dữ liệu.
+Yêu cầu Node.js 22, pnpm 10 và Docker Desktop. PostgreSQL được chạy trong
+Docker nên không cần cài PostgreSQL trực tiếp trên máy.
+
+### Setup local
 
 ```powershell
 pnpm install --frozen-lockfile
+pnpm setup:local
 pnpm dev
 ```
+
+`setup:local` khởi động PostgreSQL ở `localhost:5437`, tự tạo file env local,
+tạo JWT secret mới và tự restore `database/source.dump` đi kèm source. Nếu dump
+không tồn tại, script sẽ chạy các migration đã commit.
+
+### Đóng gói source để mang sang máy khác
+
+Đóng gói source kèm database dump:
+
+```powershell
+pnpm package:local
+```
+
+Lệnh trên tạo `btctu-local.zip` có cả `database/source.dump`. Có thể dùng alias
+sau đây tương đương:
+
+```powershell
+pnpm package:local:with-db
+```
+
+Giải nén `btctu-local.zip` trên máy đích rồi chạy:
+
+```powershell
+pnpm install --frozen-lockfile
+pnpm setup:local
+pnpm dev
+```
+
+`database/source.dump` chứa dữ liệu thật; không gửi source hoặc package qua
+kênh công khai. Nếu cổng `5437` đã được sử dụng, đặt cổng khác trước khi
+setup, ví dụ `$env:BTCTU_DB_PORT=5438`.
 
 - Giao diện: `http://localhost:3000`
 - API: `http://localhost:8787`
 - Mô tả OpenAPI: `http://localhost:8787/openapi.json`
+
+Chi tiết quản lý database local xem tại [docs/local-database.md](docs/local-database.md).
 
 Có thể chạy riêng từng ứng dụng:
 

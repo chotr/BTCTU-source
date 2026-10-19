@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: btctu-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: btctu
+      POSTGRES_USER: btctu
+      POSTGRES_PASSWORD: btctu_local
+    ports:
+      - "${BTCTU_DB_PORT:-5437}:5432"
+    volumes:
+      - btctu-postgres-data:/var/lib/postgresql/data
+
+volumes:
+  btctu-postgres-data:

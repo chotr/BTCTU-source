@@ -15,5 +15,6 @@ const appEnv = readEnv({
 });
 
 const app = createApp(appEnv);
+app.listen(8787);
 
 export default httpServerHandler({ port: 8787 });

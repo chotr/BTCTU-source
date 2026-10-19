@@ -1,8 +1,5 @@
 # BTCTU — Quản lý nhiệm vụ và đánh giá
 
-Đây là mã nguồn đang phát triển cho ứng dụng nội bộ của Ban Tổ chức Tỉnh ủy.
-Ứng dụng hướng tới việc theo dõi nhiệm vụ, kết quả thực hiện, KPI và hồ sơ đánh
-giá trên cùng một quy trình.
 
 ## Hiện trạng
 
